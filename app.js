@@ -177,8 +177,7 @@ function moveLens(clientX, clientY) {
   const elapsed = Math.max(8, now - lastMoveTime);
   const speed = Math.hypot(x - lastX, y - lastY) / elapsed;
   const intensity = Math.max(0, Math.min(1, (speed - SLOW_SPEED) / (FAST_SPEED - SLOW_SPEED)));
-  const fullRadius = Math.hypot(Math.max(x, box.width - x), Math.max(y, box.height - y)) + 30;
-  targetRadius = BASE_R + (Math.max(BASE_R, fullRadius) - BASE_R) * intensity;
+  targetRadius = BASE_R * (1 + 0.4 * intensity);
   lastMoveTime = now;
   setLens(x, y);
   document.body.classList.add("lens-on");
@@ -199,8 +198,8 @@ function tick(now) {
     if (REDUCED) {
       if (lensRadius !== BASE_R) { lensRadius = BASE_R; applyRadius(lensRadius); }
     } else {
-      if (now - lastMoveTime > 400) targetRadius = BASE_R;
-      const duration = targetRadius > lensRadius ? 140 : 650;
+      if (now - lastMoveTime > 120) targetRadius = BASE_R;
+      const duration = targetRadius > lensRadius ? 240 : 700;
       lensRadius += (targetRadius - lensRadius) * (1 - Math.exp(-elapsed / duration));
       applyRadius(lensRadius);
     }
