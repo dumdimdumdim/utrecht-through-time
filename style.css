@@ -126,6 +126,14 @@ body.lens-on #mapA { opacity: 1; }
 .glass-btn svg { width: 20px; height: 20px; }
 .glass-btn.on { background: var(--glass-active); border-color: var(--glass-active);
   color: var(--glass-active-ink); }
+.zoom-control { display: flex; margin-left: 10px; }
+.zoom-control .glass-btn:first-child {
+  border-radius: var(--r-sm) 0 0 var(--r-sm);
+}
+.zoom-control .glass-btn:last-child {
+  border-radius: 0 var(--r-sm) var(--r-sm) 0; margin-left: -1px;
+}
+.zoom-control .glass-btn:focus-visible { position: relative; z-index: 1; }
 
 /* ---------------------------------------------------------- year preview */
 #yearPreview {
