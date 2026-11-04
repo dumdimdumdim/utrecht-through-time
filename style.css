@@ -1,0 +1,197 @@
+/* Hallmark · macrostructure: App Tool (spyglass) · tone: white liquid-glass · designed-as-app
+ * genre: modern-minimal · theme: custom "white glass" over map (OKLCH tokens)
+ * Note: lens masks use #000/transparent as alpha stops, not palette. */
+:root {
+  /* white glass surfaces (frosted, floats over the maps) */
+  --glass: oklch(1 0 0 / 0.55);
+  --glass-strong: oklch(1 0 0 / 0.82);
+  --glass-soft: oklch(1 0 0 / 0.36);
+  --glass-active: oklch(0.22 0.02 255 / 0.9);   /* dark "selected" */
+  --glass-active-ink: oklch(0.97 0.005 250);
+  --overlay: oklch(0.18 0.03 255 / 0.45);
+
+  /* hairlines + sheen */
+  --line: oklch(0.15 0.02 255 / 0.12);
+  --line-strong: oklch(0.15 0.02 255 / 0.26);
+  --sheen: oklch(1 0 0 / 0.75);
+
+  /* text */
+  --ink: oklch(0.22 0.02 255);
+  --ink-dim: oklch(0.42 0.02 255);
+  --ink-faint: oklch(0.52 0.02 255);
+
+  /* accent (antique gold) */
+  --gold: oklch(0.72 0.12 80);
+  --gold-ink: oklch(0.45 0.09 75);
+  --gold-line: oklch(0.72 0.12 80 / 0.55);
+
+  /* map paper (behind tiles) */
+  --paper: oklch(0.92 0.012 90);
+
+  /* shadows */
+  --shadow: 0 16px 40px oklch(0.15 0.03 255 / 0.28);
+  --shadow-sm: 0 6px 20px oklch(0.15 0.03 255 / 0.2);
+
+  /* radii */
+  --r-sm: 14px;
+  --r-lg: 22px;
+  --r-pill: 999px;
+
+  /* type + motion */
+  --font-ui: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 0.18s;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; overflow: hidden; }
+body {
+  background: var(--paper); color: var(--ink);
+  font: 14px/1.45 var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ------------------------------------------------------------- glass base */
+.glass {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 var(--sheen);
+}
+
+/* ---------------------------------------------------------------- stage */
+#stage { position: fixed; inset: 0; z-index: 0; background: var(--paper); }
+.map { position: absolute; inset: 0; }
+#mapB { z-index: 1; }
+#mapA {
+  z-index: 2; pointer-events: none; opacity: 0; transition: opacity var(--dur) var(--ease-out);
+  --lx: 50%; --ly: 50%; --r0: 80px; --r1: 95px; --r2: 110px;
+  -webkit-mask-image: radial-gradient(circle at var(--lx) var(--ly),
+      #000 var(--r0), rgba(0, 0, 0, .55) var(--r1), transparent var(--r2));
+  mask-image: radial-gradient(circle at var(--lx) var(--ly),
+      #000 var(--r0), rgba(0, 0, 0, .55) var(--r1), transparent var(--r2));
+}
+body.lens-on #mapA { opacity: 1; }
+.leaflet-container { background: var(--paper); font: inherit; }
+
+#mapFlash {
+  z-index: 4; opacity: 0; pointer-events: none; background: transparent !important;
+  --fr: 0px; --fr2: 0px;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%,
+      #000 var(--fr), transparent var(--fr2));
+  mask-image: radial-gradient(circle at 50% 50%,
+      #000 var(--fr), transparent var(--fr2));
+}
+
+/* ------------------------------------------------------------------ years */
+.years {
+  position: fixed; left: 14px; bottom: 14px; z-index: 100;
+  display: flex; gap: 6px; flex-wrap: wrap; max-width: 58vw;
+}
+.years button {
+  border: 1px solid var(--line); background: var(--glass); color: var(--ink);
+  border-radius: var(--r-pill); padding: 8px 14px; font: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 var(--sheen);
+  transition: background-color var(--dur) var(--ease-out), color var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out);
+}
+.years button:hover { background: var(--glass-strong); }
+.years button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.years button.on { background: var(--glass-active); border-color: var(--glass-active);
+  color: var(--glass-active-ink); }
+.years button.previewing { border-color: var(--gold-line); }
+
+/* -------------------------------------------------------------- controls */
+.controls {
+  position: fixed; right: 14px; bottom: 14px; z-index: 100;
+  display: flex; gap: 6px;
+}
+.glass-btn {
+  display: inline-grid; place-items: center; width: 44px; height: 44px;
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--glass); color: var(--ink); cursor: pointer;
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 var(--sheen);
+  transition: background-color var(--dur) var(--ease-out), color var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out);
+}
+.glass-btn:hover { background: var(--glass-strong); }
+.glass-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.glass-btn svg { width: 20px; height: 20px; }
+.glass-btn.on { background: var(--glass-active); border-color: var(--glass-active);
+  color: var(--glass-active-ink); }
+
+/* ---------------------------------------------------------- year preview */
+#yearPreview {
+  position: fixed; z-index: 200; width: 252px; padding: 6px 6px 2px;
+  background: var(--glass-strong); border: 1px solid var(--line); border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  opacity: 0; visibility: hidden; transform: translateY(6px);
+  transition: opacity .14s var(--ease-out), transform .14s var(--ease-out);
+  pointer-events: none;
+}
+#yearPreview.on { opacity: 1; visibility: visible; transform: none; }
+#yearPreview .mini { width: 240px; height: 240px; border-radius: 14px; overflow: hidden; background: var(--paper); }
+#yearPreview .cap { display: flex; justify-content: space-between; gap: 8px; padding: 6px 3px 3px; font-size: 11px; color: var(--ink-dim); }
+#yearPreview .cap b { color: var(--gold-ink); font-weight: 600; }
+#yearPreview::after {
+  content: ""; position: absolute; bottom: -7px; left: 50%; margin-left: -7px;
+  border: 7px solid transparent; border-top-color: var(--line); border-bottom: 0;
+}
+
+/* ------------------------------------------------------------------ info */
+#info { position: fixed; inset: 0; z-index: 300; background: var(--overlay);
+  display: grid; place-items: center; padding: 20px; }
+#info.hidden { display: none; }
+.info-card {
+  position: relative; width: min(560px, 92vw); max-height: 84vh; overflow: auto;
+  padding: 28px 30px 24px; border-radius: var(--r-lg);
+  animation: info-in .24s var(--ease-out);
+}
+@keyframes info-in { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+.info-card .close { position: absolute; right: 14px; top: 14px; }
+.eyebrow { margin: 0 0 6px; font-size: 11px; font-weight: 650; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--gold-ink); }
+.info-card h2 { margin: 0 0 12px; font-size: 24px; font-weight: 650; letter-spacing: -.01em; }
+.info-card h3 { margin: 20px 0 8px; font-size: 13px; font-weight: 650; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ink-faint); }
+.info-card p { margin: 0 0 12px; color: var(--ink-dim); font-size: 14px; line-height: 1.6; }
+.info-card ul { margin: 0; padding-left: 18px; color: var(--ink-dim); font-size: 14px; line-height: 1.6; }
+.info-card li { margin-bottom: 7px; }
+.info-card b { color: var(--ink); font-weight: 600; }
+.info-card .credits { list-style: none; padding-left: 0; }
+.info-card .credits li { position: relative; padding-left: 16px; }
+.info-card .credits li::before { content: ""; position: absolute; left: 0; top: .6em;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+.info-card .fine { margin: 18px 0 0; font-size: 12.5px; color: var(--ink-faint); }
+.info-card a { color: var(--gold-ink); text-decoration: none; border-bottom: 1px solid var(--gold-line); }
+.info-card a:hover { color: var(--ink); }
+
+/* ---------------------------------------------------------- attribution */
+.attribution {
+  position: fixed; top: 14px; left: 14px; z-index: 100;
+  font-size: 11px; color: var(--ink-dim);
+  text-shadow: 0 1px 3px oklch(1 0 0 / 0.85);
+  pointer-events: none; white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ responsive */
+@media (max-width: 560px) {
+  .years { max-width: 62vw; gap: 4px; }
+  .years button { padding: 7px 10px; font-size: 12px; }
+  .controls { gap: 4px; }
+  .glass-btn { width: 40px; height: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #mapA, #yearPreview, .info-card { transition: none; animation: none; }
+  .years button, .glass-btn { transition: none; }
+}

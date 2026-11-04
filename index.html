@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Utrecht through time — a spyglass over four centuries</title>
+<meta name="description" content="A white-glass spyglass that overlays the 1569/70 plan of Utrecht and later topographical surveys on the present-day city.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="lens-on">
+
+<main id="stage">
+  <div id="mapB" class="map"></div>
+  <div id="mapA" class="map"></div>
+  <div id="mapFlash" class="map"></div>
+</main>
+
+<div class="attribution" id="attribution"></div>
+
+<div class="years" id="years" role="group" aria-label="Historic map"></div>
+
+<div class="controls" role="group" aria-label="Map controls">
+  <button id="swap" class="glass-btn" aria-label="Swap maps" title="Swap maps (X)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>
+    </svg>
+  </button>
+  <button id="btnInfo" class="glass-btn" aria-label="About and credits" title="About and credits">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.5h.01"/>
+    </svg>
+  </button>
+  <button id="zoomOut" class="glass-btn" aria-label="Zoom out">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M5 12h14"/>
+    </svg>
+  </button>
+  <button id="zoomIn" class="glass-btn" aria-label="Zoom in">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 5v14"/><path d="M5 12h14"/>
+    </svg>
+  </button>
+</div>
+
+<div id="yearPreview" aria-hidden="true">
+  <div class="mini" id="yearMap"></div>
+  <div class="cap"><b id="pvYear"></b><span id="pvSrc"></span></div>
+</div>
+
+<div id="info" class="hidden" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+  <div class="info-card glass">
+    <button id="infoClose" class="glass-btn close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M6 6l12 12"/><path d="M18 6 6 18"/>
+      </svg>
+    </button>
+    <p class="eyebrow">A spyglass over four centuries</p>
+    <h2 id="infoTitle">Utrecht through time</h2>
+
+    <p class="lede">Jacob van Deventer surveyed the cities of the Low Countries for
+      Philip&nbsp;II of Spain. His 1569/70 plan of Utrecht is among the earliest
+      detailed ground plans of the city. This lens places that plan — and the
+      topographical surveys that followed — over the present-day city, so streets,
+      canals and fortifications can be compared directly.</p>
+
+    <h3>How it works</h3>
+    <ul>
+      <li>Move your pointer and a spyglass reveals a historic plan —
+        <b>1569/70, 1900, 1925, 1950</b> or <b>1975</b> — exactly where you point.</li>
+      <li>Stop moving and the lens slowly grows to fill the screen; move again and
+        it shrinks back.</li>
+      <li><b>Swap</b> flips the layers: the old plan stays on screen and today's city
+        appears inside the lens.</li>
+      <li>The lens is 1:1 with the base map — nothing is magnified — so the streets
+        line up exactly.</li>
+    </ul>
+
+    <h3>Credits</h3>
+    <ul class="credits">
+      <li>1569/70 plan of Utrecht — Jacob van Deventer. Universiteitsbibliotheek
+        Utrecht, Kaart&nbsp;IX.E.a.35. Public domain.</li>
+      <li>1900–1975 topographical maps — Kadaster / Topotijdreis.</li>
+      <li>Present-day base map — © OpenStreetMap contributors.</li>
+      <li>Aerial imagery — Esri, Maxar, Earthstar Geographics.</li>
+    </ul>
+
+    <p class="fine">Built by <a href="https://kisleyko.com" target="_blank" rel="noopener">Kanstantsin&nbsp;Kisleika</a>.</p>
+  </div>
+</div>
+
+<script src="vendor/leaflet.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
