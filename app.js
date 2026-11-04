@@ -14,6 +14,11 @@ const SOURCES = {
     url: "tiles/{z}/{x}/{y}.webp?v=2", minNative: 15, maxNative: 18,
     bounds: BOUNDS, credit: "UBU · Allmaps",
   },
+  "1740": {
+    label: "c. 1740 · Urbis Traiecti", short: "c.1740",
+    url: "https://allmaps.xyz/maps/da8b0d51919d33c0/{z}/{x}/{y}.png", maxNative: 19,
+    bounds: [[52.0735, 5.0968], [52.1090, 5.1497]], credit: "Utrecht University Library · Allmaps",
+  },
   "1900": {
     label: "1900 · topographical", short: "1900",
     url: "compare/tiles/1900/{z}/{x}/{y}.webp", minNative: 14, maxNative: 16,
@@ -51,7 +56,7 @@ const SOURCES = {
   },
 };
 
-const OLD_KEYS = ["1569", "1900", "1925", "1950", "1975", "1985"];
+const OLD_KEYS = ["1569", "1740", "1900", "1925", "1950", "1975", "1985"];
 const $ = id => document.getElementById(id);
 const state = { old: "1569", modern: "osm", invert: false };
 const BASE_R = 110, SLOW_SPEED = 0.15, FAST_SPEED = 3;
@@ -431,7 +436,7 @@ function init() {
 document.addEventListener("keydown", e => {
   const tag = e.target.tagName;
   if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
-  if (/^[1-6]$/.test(e.key)) {
+  if (/^[1-7]$/.test(e.key)) {
     const k = OLD_KEYS[+e.key - 1];
     if (k) setOld(k);
   } else if (e.key.toLowerCase() === "x") {

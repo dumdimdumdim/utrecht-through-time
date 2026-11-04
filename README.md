@@ -11,7 +11,7 @@ can compare four centuries directly.
 ## What it does
 
 - **Base layer** — Streets (OpenStreetMap) or Aerial (Esri).
-- **Historic layers** — 1569/70 (Van Deventer), 1900, 1925, 1950, 1975, 1985.
+- **Historic layers** — 1569/70 (Van Deventer), c. 1740, 1900, 1925, 1950, 1975, 1985.
 - **Spyglass** — the old plan appears inside the lens under your pointer. Move
   faster to expand it slightly; pause and it gradually reveals the whole map.
 - **Swap** — flips the two layers: the old plan stays on screen and today's city
@@ -22,7 +22,7 @@ can compare four centuries directly.
 
 | key | action |
 |---|---|
-| `1`–`6` | switch historic map (1569 → 1985) |
+| `1`–`7` | switch historic map (1569 → 1985) |
 | `X` | swap base and lens |
 | `F` | fullscreen |
 | `Esc` | close the info panel |
@@ -68,6 +68,7 @@ The site goes live at `https://dumdimdumdim.github.io/utrecht-through-time/`.
 
 - **1569/70 plan of Utrecht** — Jacob van Deventer.
   Universiteitsbibliotheek Utrecht, Kaart IX.E.a.35. **Public domain.**
+- **c. 1740, Urbis Traiecti ad Rhenum** — [Utrecht University Library, Special Collections](https://objects.library.uu.nl/reader/1874-348748), Kaart *VIII*.B.h.30. Georeferenced and served via [Allmaps](https://annotations.allmaps.org/maps/da8b0d51919d33c0); availability depends on the external services.
 - **1900, 1925, 1950, 1975, 1985 topographical maps** — Kadaster / Topotijdreis. The 1985 layer uses the [Esri Nederland historical map service](https://www.arcgis.com/home/item.html?id=8e69dff18a0049bc98b6a00f07632fa0); it contains the latest mapping available through 1985, not necessarily surveyed in that year.
 - **Present-day base map** — © OpenStreetMap contributors
   ([CC BY-SA](https://www.openstreetmap.org/copyright)).
