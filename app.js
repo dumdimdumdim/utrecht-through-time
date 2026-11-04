@@ -210,7 +210,7 @@ function tick(now) {
         const growth = 15 * Math.expm1(Math.min(idleSeconds, 30) * Math.log(1.2)) / Math.log(1.2);
         targetRadius = Math.min(fullRadius, BASE_R + growth);
       }
-      const duration = targetRadius > lensRadius ? 240 : 700;
+      const duration = 240;
       lensRadius += (targetRadius - lensRadius) * (1 - Math.exp(-elapsed / duration));
       applyRadius(lensRadius);
     }
