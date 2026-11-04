@@ -49,7 +49,7 @@ const SOURCES = {
 const OLD_KEYS = ["1569", "1900", "1925", "1950", "1975"];
 const $ = id => document.getElementById(id);
 const state = { old: "1569", modern: "osm", invert: false };
-const BASE_R = 110, SLOW_SPEED = 0.15, FAST_SPEED = 1.5;
+const BASE_R = 110, SLOW_SPEED = 0.15, FAST_SPEED = 3;
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let lensRadius = BASE_R, lensActive = false, targetRadius = BASE_R;
 let lastX = 0, lastY = 0, lastMoveTime = 0, lastFrameTime = 0;
@@ -199,8 +199,8 @@ function tick(now) {
     if (REDUCED) {
       if (lensRadius !== BASE_R) { lensRadius = BASE_R; applyRadius(lensRadius); }
     } else {
-      if (now - lastMoveTime > 220) targetRadius = BASE_R;
-      const duration = targetRadius > lensRadius ? 45 : 350;
+      if (now - lastMoveTime > 400) targetRadius = BASE_R;
+      const duration = targetRadius > lensRadius ? 140 : 650;
       lensRadius += (targetRadius - lensRadius) * (1 - Math.exp(-elapsed / duration));
       applyRadius(lensRadius);
     }
