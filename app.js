@@ -34,6 +34,11 @@ const SOURCES = {
     url: "compare/tiles/1975/{z}/{x}/{y}.webp", minNative: 14, maxNative: 16,
     bounds: TBOUNDS, credit: "Kadaster / Topotijdreis",
   },
+  "1985": {
+    label: "1985 · topographical", short: "1985",
+    url: "compare/tiles/1985/{z}/{x}/{y}.webp", minNative: 14, maxNative: 16,
+    bounds: TBOUNDS, credit: "Kadaster / Topotijdreis · Esri Nederland",
+  },
   osm: {
     label: "Streets", short: "Streets",
     url: "https://tile.openstreetmap.de/{z}/{x}/{y}.png", maxNative: 19,
@@ -46,7 +51,7 @@ const SOURCES = {
   },
 };
 
-const OLD_KEYS = ["1569", "1900", "1925", "1950", "1975"];
+const OLD_KEYS = ["1569", "1900", "1925", "1950", "1975", "1985"];
 const $ = id => document.getElementById(id);
 const state = { old: "1569", modern: "osm", invert: false };
 const BASE_R = 110, SLOW_SPEED = 0.15, FAST_SPEED = 3;
@@ -415,7 +420,7 @@ function init() {
 document.addEventListener("keydown", e => {
   const tag = e.target.tagName;
   if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
-  if (/^[1-5]$/.test(e.key)) {
+  if (/^[1-6]$/.test(e.key)) {
     const k = OLD_KEYS[+e.key - 1];
     if (k) setOld(k);
   } else if (e.key.toLowerCase() === "x") {
