@@ -177,7 +177,7 @@ function moveLens(clientX, clientY) {
   const elapsed = Math.max(8, now - lastMoveTime);
   const speed = Math.hypot(x - lastX, y - lastY) / elapsed;
   const intensity = Math.max(0, Math.min(1, (speed - SLOW_SPEED) / (FAST_SPEED - SLOW_SPEED)));
-  targetRadius = BASE_R * (1 + 0.4 * intensity);
+  targetRadius = BASE_R * (1 + intensity);
   lastMoveTime = now;
   setLens(x, y);
   document.body.classList.add("lens-on");
