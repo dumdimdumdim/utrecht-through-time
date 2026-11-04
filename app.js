@@ -49,11 +49,10 @@ const SOURCES = {
 const OLD_KEYS = ["1569", "1900", "1925", "1950", "1975"];
 const $ = id => document.getElementById(id);
 const state = { old: "1569", modern: "osm", invert: false };
-const BASE_R = 110, GROW = 15, MOVE_RESET = 70;
+const BASE_R = 110, SLOW_SPEED = 0.15, FAST_SPEED = 1.5;
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-let lensRadius = BASE_R, lensPhase = "idle", lensActive = false;
-let lastX = 0, lastY = 0, anchorX = 0, anchorY = 0;
-let lastBigMove = 0, resetFrom = BASE_R, resetStart = 0, growStart = 0;
+let lensRadius = BASE_R, lensActive = false, targetRadius = BASE_R;
+let lastX = 0, lastY = 0, lastMoveTime = 0, lastFrameTime = 0;
 let lastRadius = -1;
 
 /* ------------------------------------------------------------------ maps */
@@ -119,6 +118,8 @@ function replaceLayer(map, current, key) {
 function refreshLayers() {
   const base = state.invert ? state.old : state.modern;
   const hover = state.invert ? state.modern : state.old;
+  mapB.getContainer().classList.toggle("historic-map", OLD_KEYS.includes(base));
+  mapA.getContainer().classList.toggle("historic-map", OLD_KEYS.includes(hover));
   if (base !== baseKey) {
     layerB = replaceLayer(mapB, layerB, base);
     baseKey = base;
@@ -138,7 +139,7 @@ function applyRadius(r) {
   if (Math.abs(r - lastRadius) < 0.05) return; // radius unchanged — skip DOM writes
   lastRadius = r;
   const s = mapA.getContainer().style;
-  const feather = Math.max(0, 30 + (r - BASE_R));
+  const feather = 30;
   s.setProperty("--r0", Math.max(0, r - feather).toFixed(1) + "px");
   s.setProperty("--r1", (r - feather / 2).toFixed(1) + "px");
   s.setProperty("--r2", r.toFixed(1) + "px");
@@ -159,9 +160,8 @@ function enterLens(clientX, clientY) {
   const x = Math.max(0, Math.min(box.width, clientX - box.left));
   const y = Math.max(0, Math.min(box.height, clientY - box.top));
   lensActive = true;
-  anchorX = x; anchorY = y;
-  lastBigMove = performance.now();
-  lensPhase = "idle";
+  lastMoveTime = performance.now();
+  targetRadius = BASE_R;
   lensRadius = BASE_R;
   applyRadius(lensRadius);
   setLens(x, y);
@@ -174,47 +174,34 @@ function moveLens(clientX, clientY) {
   const x = Math.max(0, Math.min(box.width, clientX - box.left));
   const y = Math.max(0, Math.min(box.height, clientY - box.top));
   const now = performance.now();
-  const dist = Math.hypot(x - anchorX, y - anchorY);
-  if (dist > MOVE_RESET) {
-    anchorX = x; anchorY = y; lastBigMove = now;
-    if (lensPhase !== "reset") {
-      if (lensRadius > BASE_R + .5) {
-        resetFrom = lensRadius; resetStart = now; lensPhase = "reset";
-      } else {
-        lensPhase = "idle";
-      }
-    }
-  }
+  const elapsed = Math.max(8, now - lastMoveTime);
+  const speed = Math.hypot(x - lastX, y - lastY) / elapsed;
+  const intensity = Math.max(0, Math.min(1, (speed - SLOW_SPEED) / (FAST_SPEED - SLOW_SPEED)));
+  const fullRadius = Math.hypot(Math.max(x, box.width - x), Math.max(y, box.height - y)) + 30;
+  targetRadius = BASE_R + (Math.max(BASE_R, fullRadius) - BASE_R) * intensity;
+  lastMoveTime = now;
   setLens(x, y);
   document.body.classList.add("lens-on");
 }
 
 function leaveLens() {
   lensActive = false;
-  lensPhase = "idle";
+  targetRadius = BASE_R;
   lensRadius = BASE_R;
   applyRadius(lensRadius);
   document.body.classList.remove("lens-on");
 }
 
 function tick(now) {
+  const elapsed = lastFrameTime ? Math.min(now - lastFrameTime, 100) : 16;
+  lastFrameTime = now;
   if (lensActive && document.body.classList.contains("lens-on")) {
     if (REDUCED) {
       if (lensRadius !== BASE_R) { lensRadius = BASE_R; applyRadius(lensRadius); }
     } else {
-      if (lensPhase === "reset") {
-        const t = Math.min(1, (now - resetStart) / 600);
-        const e = 1 - Math.pow(1 - t, 3);
-        lensRadius = resetFrom + (BASE_R - resetFrom) * e;
-        if (t >= 1) { lensRadius = BASE_R; lensPhase = "idle"; }
-      } else if (lensPhase === "grow") {
-        const t = Math.max(0, (now - growStart) / 1000);
-        const cap = Math.max(stage.clientWidth, stage.clientHeight) * 1.4;
-        lensRadius = Math.min(cap, BASE_R + GROW * (Math.pow(1.2, t) - 1) / Math.log(1.2));
-      } else {
-        lensRadius = BASE_R;
-        if (now - lastBigMove > 140) { lensPhase = "grow"; growStart = now; }
-      }
+      if (now - lastMoveTime > 220) targetRadius = BASE_R;
+      const duration = targetRadius > lensRadius ? 45 : 350;
+      lensRadius += (targetRadius - lensRadius) * (1 - Math.exp(-elapsed / duration));
       applyRadius(lensRadius);
     }
   }
