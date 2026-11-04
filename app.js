@@ -231,6 +231,7 @@ function updateChrome() {
     b.classList.toggle("on", on);
     b.setAttribute("aria-pressed", on ? "true" : "false");
   });
+  positionYearIndicator();
   $("swap").classList.toggle("on", state.invert);
   $("swap").setAttribute("aria-pressed", state.invert ? "true" : "false");
 }
@@ -283,7 +284,7 @@ function hidePreview() {
 }
 
 function buildYears() {
-  $("years").innerHTML = OLD_KEYS.map(k =>
+  $("years").innerHTML = '<span class="year-indicator" aria-hidden="true"></span>' + OLD_KEYS.map(k =>
     `<button data-old="${k}">${SOURCES[k].short}</button>`).join("");
   document.querySelectorAll("#years button").forEach(b => {
     const key = b.dataset.old;
@@ -293,6 +294,14 @@ function buildYears() {
     b.addEventListener("blur", hidePreview);
     b.addEventListener("click", () => { hidePreview(); setOld(key); });
   });
+}
+
+function positionYearIndicator() {
+  const selected = $("years").querySelector("button.on");
+  const indicator = $("years").querySelector(".year-indicator");
+  if (!selected || !indicator) return;
+  indicator.style.width = selected.offsetWidth + "px";
+  indicator.style.transform = `translateX(${selected.offsetLeft}px)`;
 }
 
 /* --------------------------------------------------------------- flash */
@@ -396,6 +405,7 @@ function init() {
   setLens(box.width * lx / 100, box.height * ly / 100);
   document.body.classList.add("lens-on");
   updateChrome();
+  requestAnimationFrame(() => $("years").classList.add("ready"));
   requestAnimationFrame(tick);
 
   $("swap").addEventListener("click", () => setInvert(!state.invert));
@@ -410,6 +420,7 @@ function init() {
 
   window.addEventListener("resize", () => {
     hidePreview();
+    positionYearIndicator();
     mapA.invalidateSize(); mapB.invalidateSize(); mapFlash.invalidateSize();
     const r = stage.getBoundingClientRect();
     setLens(Math.min(lastX, r.width), Math.min(lastY, r.height));

@@ -95,22 +95,31 @@ body.lens-on #mapA { opacity: 1; }
   position: fixed; left: 14px; bottom: 14px; z-index: 100;
   display: flex; align-items: flex-end; gap: 12px; max-width: 70vw;
 }
-.years { display: flex; gap: 6px; flex-wrap: wrap; }
-.year-controls > .glass-btn { flex: none; }
-.years button {
-  border: 1px solid var(--line); background: var(--glass); color: var(--ink);
-  border-radius: var(--r-pill); padding: 8px 14px; font: inherit; font-size: 13px; font-weight: 600;
-  cursor: pointer; white-space: nowrap;
+.years {
+  position: relative; display: flex; padding: 3px;
+  border: 1px solid var(--line); border-radius: var(--r-pill);
+  background: var(--glass); box-shadow: var(--shadow-sm), inset 0 1px 0 var(--sheen);
   -webkit-backdrop-filter: blur(18px) saturate(160%);
   backdrop-filter: blur(18px) saturate(160%);
-  box-shadow: var(--shadow-sm), inset 0 1px 0 var(--sheen);
+}
+.year-indicator {
+  position: absolute; top: 3px; left: 0; height: calc(100% - 6px);
+  border-radius: var(--r-pill); background: var(--glass-active); pointer-events: none;
+}
+.years.ready .year-indicator {
+  transition: transform .35s var(--ease-out), width .35s var(--ease-out);
+}
+.year-controls > .glass-btn { flex: none; }
+.years button {
+  position: relative; z-index: 1; border: 1px solid transparent; background: transparent; color: var(--ink);
+  border-radius: var(--r-pill); padding: 8px 14px; font: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
   transition: background-color var(--dur) var(--ease-out), color var(--dur) var(--ease-out),
     border-color var(--dur) var(--ease-out);
 }
 .years button:hover { background: var(--glass-strong); }
 .years button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
-.years button.on { background: var(--glass-active); border-color: var(--glass-active);
-  color: var(--glass-active-ink); }
+.years button.on { background: transparent; color: var(--glass-active-ink); }
 .years button.previewing { border-color: var(--gold-line); }
 
 /* -------------------------------------------------------------- controls */
@@ -201,13 +210,13 @@ body.lens-on #mapA { opacity: 1; }
 /* ------------------------------------------------------------ responsive */
 @media (max-width: 560px) {
   .year-controls { bottom: 66px; max-width: calc(100vw - 28px); gap: 8px; }
-  .years { gap: 4px; }
-  .years button { padding: 7px 10px; font-size: 12px; }
+  .years { min-width: 0; }
+  .years button { padding: 7px clamp(3px, 1.5vw, 10px); font-size: 12px; }
   .controls { gap: 4px; }
   .glass-btn { width: 40px; height: 40px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   #mapA, #yearPreview, .info-card { transition: none; animation: none; }
-  .years button, .glass-btn { transition: none; }
+  .years button, .years.ready .year-indicator, .glass-btn { transition: none; }
 }
