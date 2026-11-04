@@ -91,10 +91,12 @@ body.lens-on #mapA { opacity: 1; }
 }
 
 /* ------------------------------------------------------------------ years */
-.years {
+.year-controls {
   position: fixed; left: 14px; bottom: 14px; z-index: 100;
-  display: flex; gap: 6px; flex-wrap: wrap; max-width: 58vw;
+  display: flex; align-items: flex-end; gap: 12px; max-width: 70vw;
 }
+.years { display: flex; gap: 6px; flex-wrap: wrap; }
+.year-controls > .glass-btn { flex: none; }
 .years button {
   border: 1px solid var(--line); background: var(--glass); color: var(--ink);
   border-radius: var(--r-pill); padding: 8px 14px; font: inherit; font-size: 13px; font-weight: 600;
@@ -198,7 +200,8 @@ body.lens-on #mapA { opacity: 1; }
 
 /* ------------------------------------------------------------ responsive */
 @media (max-width: 560px) {
-  .years { bottom: 66px; max-width: calc(100vw - 28px); gap: 4px; }
+  .year-controls { bottom: 66px; max-width: calc(100vw - 28px); gap: 8px; }
+  .years { gap: 4px; }
   .years button { padding: 7px 10px; font-size: 12px; }
   .controls { gap: 4px; }
   .glass-btn { width: 40px; height: 40px; }
