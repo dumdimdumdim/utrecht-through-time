@@ -3,7 +3,7 @@
 A liquid-glass **spyglass** that overlays the 1569/70 plan of Utrecht — and the
 topographical surveys that followed — on the present-day city. Move your pointer
 and a lens reveals the historic map exactly where you point; move faster to expand
-it, then pause to let it shrink back. Streets, canals and fortifications line up 1:1, so you
+it slightly, or pause to gradually reveal the whole map. Streets, canals and fortifications line up 1:1, so you
 can compare four centuries directly.
 
 **[Live demo →](https://dumdimdumdim.github.io/utrecht-through-time/)**
@@ -13,7 +13,7 @@ can compare four centuries directly.
 - **Base layer** — Streets (OpenStreetMap) or Aerial (Esri).
 - **Historic layers** — 1569/70 (Van Deventer), 1900, 1925, 1950, 1975.
 - **Spyglass** — the old plan appears inside the lens under your pointer. Move
-  faster to expand it; pause and it returns to its original size.
+  faster to expand it slightly; pause and it gradually reveals the whole map.
 - **Swap** — flips the two layers: the old plan stays on screen and today's city
   appears inside the lens.
 - **1:1 alignment** — the lens never magnifies, so the maps line up exactly.

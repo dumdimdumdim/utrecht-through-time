@@ -198,7 +198,13 @@ function tick(now) {
     if (REDUCED) {
       if (lensRadius !== BASE_R) { lensRadius = BASE_R; applyRadius(lensRadius); }
     } else {
-      if (now - lastMoveTime > 120) targetRadius = BASE_R;
+      const idleSeconds = Math.max(0, (now - lastMoveTime - 140) / 1000);
+      if (idleSeconds > 0) {
+        const fullRadius = Math.hypot(Math.max(lastX, stage.clientWidth - lastX),
+          Math.max(lastY, stage.clientHeight - lastY)) + 30;
+        const growth = 15 * Math.expm1(Math.min(idleSeconds, 30) * Math.log(1.2)) / Math.log(1.2);
+        targetRadius = Math.min(fullRadius, BASE_R + growth);
+      }
       const duration = targetRadius > lensRadius ? 240 : 700;
       lensRadius += (targetRadius - lensRadius) * (1 - Math.exp(-elapsed / duration));
       applyRadius(lensRadius);
