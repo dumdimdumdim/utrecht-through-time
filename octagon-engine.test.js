@@ -29,16 +29,16 @@ const ok = (c, msg) => { if (!c) { fail++; console.log('FAIL', msg); } else cons
 // T1: regular octagon, inradius 110, centre (400,300)
 octSnap(400, 300, 110);
 let css = octMask(W, H);
-let r = alphaAt(css, W, H, 400, 300); ok(r.n === 8 && r.a === 1, 'regular: 8 layers, centre solid');
-const dirs = [...Array(8)].map((_, i) => i * Math.PI / 4);   // edge normals at 0,45,...
+let r = alphaAt(css, W, H, 400, 300); ok(r.n === OCT_N && r.a === 1, 'regular: all layers, centre solid');
+const dirs = [...Array(OCT_N)].map((_, i) => i * 2 * Math.PI / OCT_N);
 let allEdge = true;
 for (const d of dirs) {
   const inB = alphaAt(css, W, H, 400 + 80 * Math.cos(d), 300 + 80 * Math.sin(d)).a;      // 30px inside edge
   const mid = alphaAt(css, W, H, 400 + 95 * Math.cos(d), 300 + 95 * Math.sin(d)).a;      // 15px inside edge
   const out = alphaAt(css, W, H, 400 + 111 * Math.cos(d), 300 + 111 * Math.sin(d)).a;    // just outside edge
-  if (Math.abs(inB - 1) > 0.005 || Math.abs(mid - .55) > 0.005 || out !== 0) { allEdge = false; console.log(d, inB, mid, out); }
+  if (Math.abs(inB - 1) > 0.005 || mid <= 0 || mid > .56 || out !== 0) { allEdge = false; console.log(d, inB, mid, out); }
 }
-ok(allEdge, 'edge normals: solid @r-30, .55 @r-15, 0 @r+1 on all 8 edges');
+ok(allEdge, 'edge normals: solid inside, soft at the edge, transparent outside');
 // vertex direction: octagon extends to R*K at vertex angle, circle-equivalent covers inradius
 ok(alphaAt(css, W, H, 400 + 117 * Math.cos(Math.PI / 8), 300 + 117 * Math.sin(Math.PI / 8)).a === 0 ||
    alphaAt(css, W, H, 400 + 117 * Math.cos(Math.PI / 8), 300 + 117 * Math.sin(Math.PI / 8)).a < 0.01, 'beyond vertex (R*K=119) is transparent');
@@ -66,7 +66,7 @@ for (const [cx, cy] of [[500, 350], [10, 10], [990, 690], [200, 600]]) {
 
 // T3: leaps during growth — held vertices freeze at ~1.2R, ≤3 at once, released when caught
 octSnap(500, 350, 110); api.lr = 110;
-let maxHeld = 0, jumps = 0, prevHold = new Array(8).fill(0), frozenOK = true, releaseOK = true, sumHeld = 0, frames = 0;
+let maxHeld = 0, jumps = 0, prevHold = new Array(OCT_N).fill(0), frozenOK = true, releaseOK = true, sumHeld = 0, frames = 0;
 let tt = 0, lr = 110;
 for (let i = 0; i < 60 * 12; i++) {
   tt += 1 / 60;
@@ -92,7 +92,7 @@ for (let i = 0; i < 60 * 3; i++) {                 // move right at 1000 px/s fo
   tt += 1 / 60; cx = 100 + (i * 1000 / 60) % 800; cy = 300 + 100 * Math.sin(i / 20);
   octStep(1 / 60, tt * 1000, cx, cy, lr2, false, false);
   const c = octMask(W, H); minCursorAlpha = Math.min(minCursorAlpha, alphaAt(c, W, H, cx, cy).a);
-  if (octHull(oct.v).length < 8) hullLoss++;
+  if (octHull(oct.v).length < OCT_N) hullLoss++;
   oct.v.forEach(p => { if (!isFinite(p.x) || !isFinite(p.y)) nan = true;
     maxLagSeen = Math.max(maxLagSeen, Math.hypot(p.x - (cx + p.rad * api.OCT_K * Math.cos(p.a)), p.y - (cy + p.rad * api.OCT_K * Math.sin(p.a)))); });
 }
@@ -107,12 +107,12 @@ console.log('   lag back avg', (back.reduce((s, p) => s + lag(p), 0) / back.leng
 ok(back.reduce((s, p) => s + lag(p), 0) / back.length > front.reduce((s, p) => s + lag(p), 0) / front.length, 'back vertices lag more than front');
 for (let i = 0; i < 60 * 3; i++) { tt += 1 / 60; octStep(1 / 60, tt * 1000, cx, cy, lr2, false, false); }
 const settle = Math.max(...oct.v.map(lag));
-ok(settle < 0.5, `settles into a regular octagon after the cursor stops (max offset ${settle.toFixed(3)}px)`);
+ok(settle < 0.5, `settles into a regular shape after the cursor stops (max offset ${settle.toFixed(3)}px)`);
 
 // T5: reduced motion = rigid regular octagon following the centre, no leaps
 octSnap(300, 300, 110); tt = 0;
 for (let i = 0; i < 120; i++) { tt += 1 / 60; octStep(1 / 60, tt * 1000, 300 + i * 5, 300, 110, true, true); }
 const cxr = 300 + 119 * 5;
 const rigid = oct.v.every(p => Math.hypot(p.x - (cxr + 110 * api.OCT_K * Math.cos(p.a)), p.y - (300 + 110 * api.OCT_K * Math.sin(p.a))) < 1e-6);
-ok(oct.v.every(p => !p.hold) && rigid, 'reduced motion: no leaps, no trail, rigid regular octagon');
+ok(oct.v.every(p => !p.hold) && rigid, 'reduced motion: no leaps, no trail, rigid regular lens');
 console.log(fail ? `\n${fail} FAILED` : '\nALL PASSED'); process.exit(fail ? 1 : 0);

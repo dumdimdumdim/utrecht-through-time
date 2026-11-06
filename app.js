@@ -183,7 +183,7 @@ function refreshLayers() {
 const stage = $("stage");
 
 /* ------------------------------------------------------------ octagon lens
-   The lens is an octagon with a soft 30px edge. Every vertex has its own position:
+   The lens is a 16-sided shape with a soft 30px edge. Every vertex has its own position:
    - moving: vertices on the far side of the motion follow more slowly, so a short
      trail drags behind the cursor and settles after it stops;
    - idle growth: from time to time a few vertices leap 20% beyond the current
@@ -194,8 +194,8 @@ const stage = $("stage");
 /* OCT:BEGIN */
 const OCTA = !!(window.CSS && CSS.supports &&
   (CSS.supports("mask-composite", "intersect") || CSS.supports("-webkit-mask-composite", "source-in")));
-const OCT_N = 8, OCT_PHASE = Math.PI / 8;       // flat top: vertices at 22.5° + k·45°
-const OCT_K = 1 / Math.cos(Math.PI / 8);        // circumradius / inradius
+const OCT_N = 16, OCT_PHASE = Math.PI / OCT_N;  // flat top
+const OCT_K = 1 / Math.cos(Math.PI / OCT_N);    // circumradius / inradius
 const OCT_FEATHER = 30;                          // same soft edge as the old circle
 const OCT_JUMP = 0.2;                            // leaping vertices overshoot by 20%
 const OCT_MAX_HELD = 3;                          // at most this many vertices ahead at once
@@ -209,7 +209,7 @@ const oct = {
   nextJump: 0, growing: false, css: "",
 };
 
-// Put every vertex on a regular octagon of inradius r around (cx, cy).
+// Put every vertex on a regular polygon of inradius r around (cx, cy).
 function octSnap(cx, cy, r) {
   oct.px = cx; oct.py = cy; oct.vx = 0; oct.vy = 0; oct.drag = 0; oct.growing = false;
   for (const p of oct.v) {
