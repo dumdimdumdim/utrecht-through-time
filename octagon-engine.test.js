@@ -50,9 +50,9 @@ function fullCoverage(cx, cy) {
   let t = 0; const dt = 1 / 60;
   for (let i = 0; i < 60 * 40; i++) {          // 40 s of idle growth, app formula
     t += dt; const idle = Math.min(t, 30);
-    const tgt = Math.min(full, 110 + 15 * Math.expm1(idle * Math.log(1.2)) / Math.log(1.2));
+    const tgt = Math.min(full, 110 + 13 * Math.expm1(idle * Math.log(1.2)) / Math.log(1.2));
     // emulate lensRadius easing
-    api.lr = (api.lr ?? 110); api.lr += (tgt - api.lr) * (1 - Math.exp(-dt / .24));
+    api.lr = (api.lr ?? 110); api.lr += (tgt - api.lr) * (1 - Math.exp(-dt / .36));
     octStep(dt, t * 1000, cx, cy, api.lr, tgt < full - .5, false);
     if (tgt >= full - .5 && i > 60 * 36) break;
   }
@@ -70,8 +70,8 @@ let maxHeld = 0, jumps = 0, prevHold = new Array(8).fill(0), frozenOK = true, re
 let tt = 0, lr = 110;
 for (let i = 0; i < 60 * 12; i++) {
   tt += 1 / 60;
-  const tgt = 110 + 15 * Math.expm1(Math.max(0, tt - .14) * Math.log(1.2)) / Math.log(1.2);
-  lr += (tgt - lr) * (1 - Math.exp(-(1 / 60) / .24));
+  const tgt = 110 + 13 * Math.expm1(Math.max(0, tt - .14) * Math.log(1.2)) / Math.log(1.2);
+  lr += (tgt - lr) * (1 - Math.exp(-(1 / 60) / .36));
   octStep(1 / 60, tt * 1000, 500, 350, lr, true, false);
   const held = oct.v.filter(p => p.hold).length; maxHeld = Math.max(maxHeld, held); sumHeld += held; frames++;
   oct.v.forEach((p, k) => {
@@ -98,7 +98,7 @@ for (let i = 0; i < 60 * 3; i++) {                 // move right at 1000 px/s fo
 }
 ok(!nan, 'no NaN');
 ok(minCursorAlpha > 0.999, `cursor stays inside solid area while moving fast (min alpha ${minCursorAlpha.toFixed(3)})`);
-ok(maxLagSeen <= 0.6 * 110 + 1e-6, `trail lag bounded: max ${maxLagSeen.toFixed(1)}px (cap 66)`);
+ok(maxLagSeen <= 0.7 * 110 + 1e-6, `trail lag bounded: max ${maxLagSeen.toFixed(1)}px (cap 77)`);
 console.log('   hull dropped a vertex (non-convex shape) in', hullLoss, 'of 180 frames');
 // trailing side lags more than the leading side (moving right, dir=(1,0))
 const back = oct.v.filter(p => Math.cos(p.a) < -.5), front = oct.v.filter(p => Math.cos(p.a) > .5);

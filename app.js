@@ -200,8 +200,8 @@ const OCT_FEATHER = 30;                          // same soft edge as the old ci
 const OCT_JUMP = 0.2;                            // leaping vertices overshoot by 20%
 const OCT_MAX_HELD = 3;                          // at most this many vertices ahead at once
 const OCT_RATE = 22;                             // how fast a vertex follows its target (1/s)
-const OCT_DRAG = 0.78;                           // how much the trailing side slows down (0..1)
-const OCT_LAG_MAX = 0.6;                         // trail length cap, as a fraction of the radius
+const OCT_DRAG = 0.88;                           // how much the trailing side slows down (0..1)
+const OCT_LAG_MAX = 0.7;                         // trail length cap, as a fraction of the radius
 const oct = {
   v: Array.from({ length: OCT_N }, (_, i) =>
     ({ a: OCT_PHASE + i * 2 * Math.PI / OCT_N, x: 0, y: 0, rad: 0, hold: 0 })),
@@ -254,7 +254,7 @@ function octStep(dt, now, cx, cy, r, growing, reduced) {
   const maxLag = OCT_LAG_MAX * Math.min(r, 140);
   for (const p of oct.v) {
     const goal = Math.max(r, p.hold);
-    p.rad += (goal - p.rad) * (1 - Math.exp(-dt * (goal > p.rad ? 26 : 14)));
+    p.rad += (goal - p.rad) * (1 - Math.exp(-dt * (goal > p.rad ? 12 : 14)));
     const tx = cx + p.rad * OCT_K * Math.cos(p.a);
     const ty = cy + p.rad * OCT_K * Math.sin(p.a);
     if (reduced) { p.x = tx; p.y = ty; continue; }
@@ -386,11 +386,11 @@ function tick(now) {
       if (idleSeconds > 0 && !touchLifted) {
         const fullRadius = Math.hypot(Math.max(lastX, stage.clientWidth - lastX),
           Math.max(lastY, stage.clientHeight - lastY)) + 30;
-        const growth = 15 * Math.expm1(Math.min(idleSeconds, 30) * Math.log(1.2)) / Math.log(1.2);
+        const growth = 13 * Math.expm1(Math.min(idleSeconds, 30) * Math.log(1.2)) / Math.log(1.2);
         targetRadius = Math.min(fullRadius, BASE_R + growth);
         lensGrowing = targetRadius < fullRadius - 0.5;
       }
-      const duration = 240;
+      const duration = lensGrowing ? 360 : 240;
       lensRadius += (targetRadius - lensRadius) * (1 - Math.exp(-elapsed / duration));
       applyRadius(lensRadius);
     }
