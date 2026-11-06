@@ -12,8 +12,11 @@ can compare four centuries directly.
 
 - **Base layer** — Streets (OpenStreetMap) or Aerial (Esri).
 - **Historic layers** — 1569/70 (Van Deventer), c. 1740, 1900, 1925, 1950, 1975, 1985.
-- **Spyglass** — the old plan appears inside the lens under your pointer. Move
-  faster to expand it slightly; pause and it gradually reveals the whole map.
+- **Spyglass** — the old plan appears inside an octagonal lens under your pointer.
+  Move faster to expand it slightly; the vertices on the trailing side lag behind
+  and leave a short tail. Pause and it gradually reveals the whole map: now and then
+  a few vertices leap 20% ahead and hold until the rest catch up. Browsers without
+  `mask-composite` fall back to a circular lens; reduced-motion gets a still octagon.
 - **Swap** — flips the two layers: the old plan stays on screen and today's city
   appears inside the lens.
 - **1:1 alignment** — the lens never magnifies, so the maps line up exactly.

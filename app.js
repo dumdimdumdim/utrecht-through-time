@@ -65,6 +65,7 @@ let lensRadius = BASE_R, lensActive = false, targetRadius = BASE_R;
 let lastX = 0, lastY = 0, lastMoveTime = 0, lastFrameTime = 0;
 let lastRadius = -1;
 let touchLifted = false;   // finger lifted: keep the lens in place, no idle growth
+let lensGrowing = false;   // idle growth in progress (drives the vertex leaps)
 
 /* ------------------------------------------------------------------ maps */
 const opts = {
@@ -181,6 +182,139 @@ function refreshLayers() {
 /* ---------------------------------------------------------------- lens */
 const stage = $("stage");
 
+/* ------------------------------------------------------------ octagon lens
+   The lens is an octagon with a soft 30px edge. Every vertex has its own position:
+   - moving: vertices on the far side of the motion follow more slowly, so a short
+     trail drags behind the cursor and settles after it stops;
+   - idle growth: from time to time a few vertices leap 20% beyond the current
+     radius and hold there until the rest of the shape has caught up.
+   Rendering is a CSS mask: one linear-gradient per edge of the convex hull,
+   intersected with mask-composite. Without mask-composite support the old
+   circular mask is used. */
+/* OCT:BEGIN */
+const OCTA = !!(window.CSS && CSS.supports &&
+  (CSS.supports("mask-composite", "intersect") || CSS.supports("-webkit-mask-composite", "source-in")));
+const OCT_N = 8, OCT_PHASE = Math.PI / 8;       // flat top: vertices at 22.5° + k·45°
+const OCT_K = 1 / Math.cos(Math.PI / 8);        // circumradius / inradius
+const OCT_FEATHER = 30;                          // same soft edge as the old circle
+const OCT_JUMP = 0.2;                            // leaping vertices overshoot by 20%
+const OCT_MAX_HELD = 3;                          // at most this many vertices ahead at once
+const OCT_RATE = 22;                             // how fast a vertex follows its target (1/s)
+const OCT_DRAG = 0.78;                           // how much the trailing side slows down (0..1)
+const OCT_LAG_MAX = 0.6;                         // trail length cap, as a fraction of the radius
+const oct = {
+  v: Array.from({ length: OCT_N }, (_, i) =>
+    ({ a: OCT_PHASE + i * 2 * Math.PI / OCT_N, x: 0, y: 0, rad: 0, hold: 0 })),
+  px: 0, py: 0, vx: 0, vy: 0, dirx: 0, diry: -1, drag: 0,
+  nextJump: 0, growing: false, css: "",
+};
+
+// Put every vertex on a regular octagon of inradius r around (cx, cy).
+function octSnap(cx, cy, r) {
+  oct.px = cx; oct.py = cy; oct.vx = 0; oct.vy = 0; oct.drag = 0; oct.growing = false;
+  for (const p of oct.v) {
+    p.rad = r; p.hold = 0;
+    p.x = cx + r * OCT_K * Math.cos(p.a);
+    p.y = cy + r * OCT_K * Math.sin(p.a);
+  }
+}
+
+function octStep(dt, now, cx, cy, r, growing, reduced) {
+  // 1. how fast, and which way, is the lens moving
+  const k = 1 - Math.exp(-dt * 12);
+  oct.vx += ((cx - oct.px) / dt - oct.vx) * k;
+  oct.vy += ((cy - oct.py) / dt - oct.vy) * k;
+  oct.px = cx; oct.py = cy;
+  const speed = Math.hypot(oct.vx, oct.vy);
+  if (speed > 25) { oct.dirx = oct.vx / speed; oct.diry = oct.vy / speed; }
+  const push = Math.min(1, Math.max(0, (speed - 40) / 700));
+  oct.drag = Math.max(push, oct.drag * Math.exp(-dt * 3));   // trail fades out over ~0.3 s
+
+  // 2. leaps during idle growth
+  if (growing && !reduced) {
+    if (!oct.growing) {
+      oct.nextJump = now + 350;
+    } else if (now >= oct.nextJump) {
+      const free = oct.v.filter(p => !p.hold);
+      let held = OCT_N - free.length;
+      for (let n = Math.random() < 0.5 ? 2 : 1; n > 0 && free.length && held < OCT_MAX_HELD; n--, held++) {
+        const p = free.splice(Math.floor(Math.random() * free.length), 1)[0];
+        p.hold = r * (1 + OCT_JUMP);
+      }
+      oct.nextJump = now + 450 + Math.random() * 650;
+    }
+    // a vertex rejoins the shape once the radius has reached the one it leapt to
+    for (const p of oct.v) if (p.hold && r >= p.hold) p.hold = 0;
+  } else {
+    for (const p of oct.v) p.hold = 0;
+  }
+  oct.growing = growing && !reduced;
+
+  // 3. move the vertices
+  const maxLag = OCT_LAG_MAX * Math.min(r, 140);
+  for (const p of oct.v) {
+    const goal = Math.max(r, p.hold);
+    p.rad += (goal - p.rad) * (1 - Math.exp(-dt * (goal > p.rad ? 26 : 14)));
+    const tx = cx + p.rad * OCT_K * Math.cos(p.a);
+    const ty = cy + p.rad * OCT_K * Math.sin(p.a);
+    if (reduced) { p.x = tx; p.y = ty; continue; }
+    const behind = (1 - (Math.cos(p.a) * oct.dirx + Math.sin(p.a) * oct.diry)) / 2; // 0 front … 1 back
+    const f = 1 - Math.exp(-dt * OCT_RATE * (1 - OCT_DRAG * oct.drag * behind));
+    p.x += (tx - p.x) * f;
+    p.y += (ty - p.y) * f;
+    const ox = p.x - tx, oy = p.y - ty, d = Math.hypot(ox, oy);
+    if (d > maxLag) { p.x = tx + ox * maxLag / d; p.y = ty + oy * maxLag / d; }
+  }
+}
+
+// Convex hull (Andrew's monotone chain) of the vertices, as [x, y] pairs.
+function octHull(pts) {
+  const p = pts.map(q => [q.x, q.y]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo = [], up = [];
+  for (const q of p) {
+    while (lo.length >= 2 && cross(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop();
+    lo.push(q);
+  }
+  for (const q of p.slice().reverse()) {
+    while (up.length >= 2 && cross(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop();
+    up.push(q);
+  }
+  return lo.slice(0, -1).concat(up.slice(0, -1));
+}
+
+// mask-image value for a W×H box: one soft half-plane per hull edge.
+function octMask(W, H) {
+  const hull = octHull(oct.v);
+  const gx = hull.reduce((t, q) => t + q[0], 0) / hull.length;
+  const gy = hull.reduce((t, q) => t + q[1], 0) / hull.length;
+  const F = OCT_FEATHER, layers = [];
+  for (let i = 0; i < hull.length; i++) {
+    const a = hull[i], b = hull[(i + 1) % hull.length];
+    let nx = b[1] - a[1], ny = a[0] - b[0];
+    const len = Math.hypot(nx, ny);
+    if (len < 1e-3) continue;
+    nx /= len; ny /= len;
+    if (nx * (a[0] - gx) + ny * (a[1] - gy) < 0) { nx = -nx; ny = -ny; }   // outward normal
+    const deg = Math.atan2(nx, -ny) * 180 / Math.PI;                        // CSS gradient angle
+    // distance from the gradient start to this edge, along the gradient line
+    const e = (W * Math.abs(nx) + H * Math.abs(ny)) / 2 + nx * (a[0] - W / 2) + ny * (a[1] - H / 2);
+    layers.push("linear-gradient(" + deg.toFixed(2) + "deg,#000 " + (e - F).toFixed(1) +
+      "px,rgba(0,0,0,.55) " + (e - F / 2).toFixed(1) + "px,transparent " + e.toFixed(1) + "px)");
+  }
+  return layers.join(",");
+}
+/* OCT:END */
+
+function octRender() {
+  const css = octMask(stage.clientWidth, stage.clientHeight);
+  if (css === oct.css) return;               // nothing moved — skip the DOM write
+  oct.css = css;
+  const s = mapA.getContainer().style;
+  s.webkitMaskImage = css;
+  s.maskImage = css;
+}
+
 function applyRadius(r) {
   lensRadius = r;
   if (Math.abs(r - lastRadius) < 0.05) return; // radius unchanged — skip DOM writes
@@ -212,6 +346,7 @@ function enterLens(clientX, clientY) {
   lensRadius = BASE_R;
   applyRadius(lensRadius);
   setLens(x, y);
+  if (OCTA) octSnap(lastX, lastY, lensRadius);
   document.body.classList.add("lens-on");
 }
 
@@ -242,6 +377,7 @@ function leaveLens() {
 function tick(now) {
   const elapsed = lastFrameTime ? Math.min(now - lastFrameTime, 100) : 16;
   lastFrameTime = now;
+  lensGrowing = false;
   if (lensActive && document.body.classList.contains("lens-on")) {
     if (REDUCED) {
       if (lensRadius !== BASE_R) { lensRadius = BASE_R; applyRadius(lensRadius); }
@@ -252,11 +388,16 @@ function tick(now) {
           Math.max(lastY, stage.clientHeight - lastY)) + 30;
         const growth = 15 * Math.expm1(Math.min(idleSeconds, 30) * Math.log(1.2)) / Math.log(1.2);
         targetRadius = Math.min(fullRadius, BASE_R + growth);
+        lensGrowing = targetRadius < fullRadius - 0.5;
       }
       const duration = 240;
       lensRadius += (targetRadius - lensRadius) * (1 - Math.exp(-elapsed / duration));
       applyRadius(lensRadius);
     }
+  }
+  if (OCTA && document.body.classList.contains("lens-on")) {
+    octStep(Math.max(elapsed / 1000, 0.004), now, lastX, lastY, lensRadius, lensGrowing, REDUCED);
+    octRender();
   }
   requestAnimationFrame(tick);
 }
@@ -488,6 +629,7 @@ function init() {
   if (qs.get("ly") !== null && Number.isFinite(+qs.get("ly"))) ly = +qs.get("ly");
   lensRadius = BASE_R;
   setLens(box.width * lx / 100, box.height * ly / 100);
+  if (OCTA) { octSnap(lastX, lastY, lensRadius); octRender(); }
   document.body.classList.add("lens-on");
   updateChrome();
   requestAnimationFrame(() => $("years").classList.add("ready"));
