@@ -145,7 +145,9 @@ body.lens-on #mapA { opacity: 1; }
 .glass-btn svg { width: 20px; height: 20px; }
 .glass-btn.on { background: var(--glass-active); border-color: var(--glass-active);
   color: var(--glass-active-ink); }
-.zoom-control { display: flex; margin-left: 10px; }
+.zoom-control { display: flex; margin-left: 10px; border-radius: var(--r-sm);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 var(--sheen); }
+.zoom-control .glass-btn { box-shadow: none; }
 .zoom-control .glass-btn:first-child {
   border-radius: var(--r-sm) 0 0 var(--r-sm);
 }
