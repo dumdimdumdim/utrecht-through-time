@@ -27,6 +27,23 @@ can compare four centuries directly.
 | `F` | fullscreen |
 | `Esc` | close the info panel |
 
+## Share a view
+
+The address bar follows the map once you start interacting, so any view can be
+sent as a link:
+
+| parameter | meaning |
+|---|---|
+| `old` | historic map: `1569`, `1740`, `1900`, `1925`, `1950`, `1975`, `1985` |
+| `modern` | `osm` (streets) or `aerial` |
+| `invert` | `1` to swap base and lens |
+| `lat`, `lng`, `z` | map centre and zoom |
+| `bbox` | `west,south,east,north` — alternative to `lat`/`lng`/`z` |
+| `lx`, `ly` | initial lens position, % of the screen (default `50`) |
+
+If an external tile service (Allmaps, OpenStreetMap, Esri) is unreachable, a small
+notice says which layer is unavailable.
+
 ## Run locally
 
 No build step, no server required:
@@ -88,6 +105,7 @@ Built by **[Kanstantsin Kisleika](https://kisleyko.com)**.
 
 ## License
 
-The code in this repository is © Kanstantsin Kisleika. Add a `LICENSE` file
-(`MIT`, or your choice) before making the repository public. The map data keeps
-the licenses of its sources listed above.
+The original project code is released under the [MIT License](LICENSE),
+© Kanstantsin Kisleika. The bundled Leaflet library is provided under its own
+[BSD 2-Clause License](vendor/LICENSE-Leaflet.txt). The map data keeps the
+licenses of its sources listed above.

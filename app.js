@@ -64,6 +64,7 @@ const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let lensRadius = BASE_R, lensActive = false, targetRadius = BASE_R;
 let lastX = 0, lastY = 0, lastMoveTime = 0, lastFrameTime = 0;
 let lastRadius = -1;
+let touchLifted = false;   // finger lifted: keep the lens in place, no idle growth
 
 /* ------------------------------------------------------------------ maps */
 const opts = {
@@ -109,10 +110,43 @@ function tileLayer(key) {
 let layerA = null, layerB = null;
 let baseKey = null, hoverKey = null;
 
+/* --------------------------------------------------------- layer health
+   External tile services (Allmaps, OpenStreetMap, Esri) can go down. If a
+   layer finishes loading with errors and not a single tile arrived, say so
+   instead of leaving an empty lens. Local layers are not watched: tiles that
+   are simply missing for part of the map are expected there. */
+const failedLayers = new Set();
+const notice = $("notice");
+
+function isExternal(key) { return /^https?:/.test(SOURCES[key].url); }
+
+function updateNotice() {
+  const keys = [...failedLayers];
+  notice.hidden = keys.length === 0;
+  if (!keys.length) return;
+  notice.textContent = keys.map(k => SOURCES[k].short).join(", ") +
+    (keys.length > 1 ? " layers are" : " layer is") + " temporarily unavailable.";
+}
+
+function watchLayer(layer, key) {
+  if (!isExternal(key)) return;
+  let ok = 0, bad = 0;
+  layer.on("loading", () => { ok = 0; bad = 0; });
+  layer.on("tileload", () => { ok++; });
+  layer.on("tileerror", () => { bad++; });
+  layer.on("load", () => {
+    if (layer !== layerA && layer !== layerB) return;
+    if (bad > 0 && ok === 0) failedLayers.add(key);
+    else failedLayers.delete(key);
+    updateNotice();
+  });
+}
+
 // Lay the new layer on top and remove the old one only after it loads —
 // no empty frame or flicker when switching year.
 function replaceLayer(map, current, key) {
   const fresh = tileLayer(key);
+  watchLayer(fresh, key);
   let done = false;
   const cleanup = () => {
     if (done) return;
@@ -131,13 +165,16 @@ function refreshLayers() {
   mapB.getContainer().classList.toggle("historic-map", OLD_KEYS.includes(base));
   mapA.getContainer().classList.toggle("historic-map", OLD_KEYS.includes(hover));
   if (base !== baseKey) {
+    failedLayers.delete(baseKey);
     layerB = replaceLayer(mapB, layerB, base);
     baseKey = base;
   }
   if (hover !== hoverKey) {
+    failedLayers.delete(hoverKey);
     layerA = replaceLayer(mapA, layerA, hover);
     hoverKey = hover;
   }
+  updateNotice();
   updateChrome();
 }
 
@@ -179,6 +216,7 @@ function enterLens(clientX, clientY) {
 }
 
 function moveLens(clientX, clientY) {
+  touchLifted = false;
   if (!lensActive) { enterLens(clientX, clientY); return; }
   const box = stage.getBoundingClientRect();
   const x = Math.max(0, Math.min(box.width, clientX - box.left));
@@ -209,7 +247,7 @@ function tick(now) {
       if (lensRadius !== BASE_R) { lensRadius = BASE_R; applyRadius(lensRadius); }
     } else {
       const idleSeconds = Math.max(0, (now - lastMoveTime - 140) / 1000);
-      if (idleSeconds > 0) {
+      if (idleSeconds > 0 && !touchLifted) {
         const fullRadius = Math.hypot(Math.max(lastX, stage.clientWidth - lastX),
           Math.max(lastY, stage.clientHeight - lastY)) + 30;
         const growth = 15 * Math.expm1(Math.min(idleSeconds, 30) * Math.log(1.2)) / Math.log(1.2);
@@ -226,7 +264,19 @@ function tick(now) {
 stage.addEventListener("pointermove", e => moveLens(e.clientX, e.clientY));
 stage.addEventListener("pointerenter", e => moveLens(e.clientX, e.clientY));
 stage.addEventListener("pointerdown", e => moveLens(e.clientX, e.clientY));
-stage.addEventListener("pointerleave", leaveLens);
+// On touch, pointerleave fires right after the finger lifts. Ignore it there:
+// the lens stays where the finger was, and only a mouse/pen leaving hides it.
+stage.addEventListener("pointerleave", e => {
+  if (e.pointerType === "touch") return;
+  leaveLens();
+});
+const liftTouch = e => {
+  if (e.pointerType !== "touch") return;
+  touchLifted = true;
+  targetRadius = BASE_R;
+};
+stage.addEventListener("pointerup", liftTouch);
+stage.addEventListener("pointercancel", liftTouch);
 
 /* --------------------------------------------------------------- chrome */
 function updateChrome() {
@@ -357,8 +407,31 @@ function setInvert(v) {
   save();
 }
 
+/* ------------------------------------------------------------------ url
+   Keep the address bar in sync with the view so any state can be shared.
+   Written only after the first user action, so a fresh visit keeps a clean URL. */
+let urlTimer = 0;
+function syncUrl() {
+  clearTimeout(urlTimer);
+  urlTimer = setTimeout(() => {
+    try {
+      const qs = new URLSearchParams(location.search);
+      qs.delete("bbox");                       // lat/lng/z supersede it
+      qs.set("old", state.old);
+      qs.set("modern", state.modern);
+      qs.set("invert", state.invert ? "1" : "0");
+      const c = mapB.getCenter();
+      qs.set("lat", c.lat.toFixed(5));
+      qs.set("lng", c.lng.toFixed(5));
+      qs.set("z", String(mapB.getZoom()));
+      history.replaceState(null, "", location.pathname + "?" + qs + location.hash);
+    } catch (e) { /* file:// or history rate limit — ignore */ }
+  }, 250);
+}
+
 /* ------------------------------------------------------------- storage */
 function save() {
+  syncUrl();
   try {
     localStorage.setItem(STORE, JSON.stringify({
       old: state.old, modern: state.modern, invert: state.invert,
@@ -376,15 +449,21 @@ function loadState() {
 
 /* ------------------------------------------------------------------ init */
 function initView(qs) {
-  let bounds = L.latLngBounds(HOME);
-  const bbox = qs.get("bbox");
-  if (bbox) {
-    const b = bbox.split(",").map(Number);
-    if (b.length === 4 && b.every(Number.isFinite)) {
-      bounds = L.latLngBounds([[b[1], b[0]], [b[3], b[2]]]);
+  const lat = parseFloat(qs.get("lat")), lng = parseFloat(qs.get("lng")),
+    zoom = parseFloat(qs.get("z"));
+  if ([lat, lng, zoom].every(Number.isFinite)) {
+    mapB.setView([lat, lng], Math.min(19, Math.max(12, zoom)), { animate: false });
+  } else {
+    let bounds = L.latLngBounds(HOME);
+    const bbox = qs.get("bbox");
+    if (bbox) {
+      const b = bbox.split(",").map(Number);
+      if (b.length === 4 && b.every(Number.isFinite)) {
+        bounds = L.latLngBounds([[b[1], b[0]], [b[3], b[2]]]);
+      }
     }
+    mapB.fitBounds(bounds, { animate: false, padding: [8, 8] });
   }
-  mapB.fitBounds(bounds, { animate: false, padding: [8, 8] });
   const c = mapB.getCenter(), z = mapB.getZoom();
   mapA.setView(c, z, { animate: false });
   mapFlash.setView(c, z, { animate: false });
@@ -400,6 +479,7 @@ function init() {
 
   buildYears();
   initView(qs);
+  mapB.on("moveend", syncUrl);   // after initView, so the first fit doesn't touch the URL
   refreshLayers();
 
   const box = stage.getBoundingClientRect();
