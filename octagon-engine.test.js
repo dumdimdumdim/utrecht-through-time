@@ -98,7 +98,7 @@ for (let i = 0; i < 60 * 3; i++) {                 // move right at 1000 px/s fo
 }
 ok(!nan, 'no NaN');
 ok(minCursorAlpha > 0.999, `cursor stays inside solid area while moving fast (min alpha ${minCursorAlpha.toFixed(3)})`);
-ok(maxLagSeen <= 0.7 * 110 + 1e-6, `trail lag bounded: max ${maxLagSeen.toFixed(1)}px (cap 77)`);
+ok(maxLagSeen <= 2.1 * 110 + 1e-6, `trail lag bounded: max ${maxLagSeen.toFixed(1)}px (cap 231)`);
 console.log('   hull dropped a vertex (non-convex shape) in', hullLoss, 'of 180 frames');
 // trailing side lags more than the leading side (moving right, dir=(1,0))
 const back = oct.v.filter(p => Math.cos(p.a) < -.5), front = oct.v.filter(p => Math.cos(p.a) > .5);

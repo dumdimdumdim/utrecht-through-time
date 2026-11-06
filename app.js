@@ -200,8 +200,8 @@ const OCT_FEATHER = 30;                          // same soft edge as the old ci
 const OCT_JUMP = 0.2;                            // leaping vertices overshoot by 20%
 const OCT_MAX_HELD = 3;                          // at most this many vertices ahead at once
 const OCT_RATE = 22;                             // how fast a vertex follows its target (1/s)
-const OCT_DRAG = 0.88;                           // how much the trailing side slows down (0..1)
-const OCT_LAG_MAX = 0.7;                         // trail length cap, as a fraction of the radius
+const OCT_DRAG = 0.97;                           // how much the trailing side slows down (0..1)
+const OCT_LAG_MAX = 2.1;                         // maximum rear lag, as a fraction of the radius
 const oct = {
   v: Array.from({ length: OCT_N }, (_, i) =>
     ({ a: OCT_PHASE + i * 2 * Math.PI / OCT_N, x: 0, y: 0, rad: 0, hold: 0 })),
@@ -251,7 +251,6 @@ function octStep(dt, now, cx, cy, r, growing, reduced) {
   oct.growing = growing && !reduced;
 
   // 3. move the vertices
-  const maxLag = OCT_LAG_MAX * Math.min(r, 140);
   for (const p of oct.v) {
     const goal = Math.max(r, p.hold);
     p.rad += (goal - p.rad) * (1 - Math.exp(-dt * (goal > p.rad ? 12 : 14)));
@@ -259,6 +258,7 @@ function octStep(dt, now, cx, cy, r, growing, reduced) {
     const ty = cy + p.rad * OCT_K * Math.sin(p.a);
     if (reduced) { p.x = tx; p.y = ty; continue; }
     const behind = (1 - (Math.cos(p.a) * oct.dirx + Math.sin(p.a) * oct.diry)) / 2; // 0 front … 1 back
+    const maxLag = (0.4 + (OCT_LAG_MAX - 0.4) * behind) * Math.min(r, 140);
     const f = 1 - Math.exp(-dt * OCT_RATE * (1 - OCT_DRAG * oct.drag * behind));
     p.x += (tx - p.x) * f;
     p.y += (ty - p.y) * f;
