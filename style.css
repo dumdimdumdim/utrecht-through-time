@@ -167,11 +167,11 @@ body.lens-on #mapA { opacity: 1; }
   box-shadow: var(--shadow);
   -webkit-backdrop-filter: blur(22px) saturate(160%);
   backdrop-filter: blur(22px) saturate(160%);
-  opacity: 0; visibility: hidden; transform: translateY(6px);
-  transition: opacity .14s var(--ease-out), transform .14s var(--ease-out);
+  opacity: 0; visibility: hidden;
+  transition: opacity .24s ease, visibility 0s linear .24s;
   pointer-events: none;
 }
-#yearPreview.on { opacity: 1; visibility: visible; transform: none; }
+#yearPreview.on { opacity: 1; visibility: visible; transition-delay: 0s; }
 #yearPreview .mini { width: 240px; height: 240px; border-radius: 14px; overflow: hidden; background: var(--paper); }
 #yearPreview .cap { display: flex; justify-content: space-between; gap: 8px; padding: 6px 3px 3px; font-size: 11px; color: var(--ink-dim); }
 #yearPreview .cap b { color: var(--gold-ink); font-weight: 600; }
