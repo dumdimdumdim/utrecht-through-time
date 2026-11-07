@@ -63,6 +63,7 @@ body {
 
 /* ---------------------------------------------------------------- stage */
 #stage { position: fixed; inset: 0; z-index: 0; background: var(--paper); }
+#stage, #stage * { cursor: none !important; }
 .map { position: absolute; inset: 0; }
 #mapB { z-index: 1; }
 #mapA {
@@ -129,6 +130,9 @@ body.lens-on #mapA { opacity: 1; }
 .controls {
   position: fixed; right: 14px; bottom: 14px; z-index: 100;
   display: flex; gap: 6px;
+}
+.year-controls::before, .controls::before {
+  content: ""; position: absolute; inset: -18px; z-index: -1; cursor: default;
 }
 .glass-btn {
   display: inline-grid; place-items: center; width: 44px; height: 44px;
