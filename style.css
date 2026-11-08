@@ -96,7 +96,7 @@ body.lens-on #mapA { opacity: 1; }
 
 /* ------------------------------------------------------------------ years */
 .year-controls {
-  position: fixed; left: 14px; bottom: 14px; z-index: 100;
+  position: fixed; left: 14px; top: 14px; z-index: 100;
   display: flex; align-items: flex-end; gap: 12px; max-width: 70vw;
 }
 .years {
@@ -176,8 +176,8 @@ body.lens-on #mapA { opacity: 1; }
 #yearPreview .cap { display: flex; justify-content: space-between; gap: 8px; padding: 6px 3px 3px; font-size: 11px; color: var(--ink-dim); }
 #yearPreview .cap b { color: var(--gold-ink); font-weight: 600; }
 #yearPreview::after {
-  content: ""; position: absolute; bottom: -7px; left: 50%; margin-left: -7px;
-  border: 7px solid transparent; border-top-color: var(--line); border-bottom: 0;
+  content: ""; position: absolute; top: -7px; left: var(--arrow-x, 50%); margin-left: -7px;
+  border: 7px solid transparent; border-bottom-color: var(--line); border-top: 0;
 }
 
 /* ------------------------------------------------------------------ info */
@@ -210,7 +210,7 @@ body.lens-on #mapA { opacity: 1; }
 
 /* ---------------------------------------------------------- attribution */
 .attribution {
-  position: fixed; top: 14px; left: 14px; z-index: 100;
+  position: fixed; bottom: 14px; left: 14px; z-index: 100;
   font-size: 11px; color: var(--ink-dim);
   text-shadow: 0 1px 3px oklch(1 0 0 / 0.85);
   pointer-events: none; white-space: nowrap;
@@ -226,7 +226,7 @@ body.lens-on #mapA { opacity: 1; }
 
 /* ------------------------------------------------------------ responsive */
 @media (max-width: 560px) {
-  .year-controls { bottom: 66px; max-width: calc(100vw - 28px); gap: 8px; }
+  .year-controls { max-width: calc(100vw - 28px); gap: 8px; }
   .years { min-width: 0; overflow-x: auto; scrollbar-width: none; }
   .years::-webkit-scrollbar { display: none; }
   .years button { padding: 7px clamp(3px, 1.5vw, 10px); font-size: 12px; }

@@ -453,7 +453,8 @@ function positionPreview(chip) {
   let left = r.left + r.width / 2 - w / 2;
   left = Math.max(m, Math.min(window.innerWidth - w - m, left));
   pv.style.left = left + "px";
-  pv.style.bottom = (window.innerHeight - r.top + 9) + "px";
+  pv.style.top = (document.querySelector(".year-controls").getBoundingClientRect().bottom + 9) + "px";
+  pv.style.setProperty("--arrow-x", Math.max(14, Math.min(w - 14, r.left + r.width / 2 - left)) + "px");
 }
 
 function showPreview(key, chip) {
