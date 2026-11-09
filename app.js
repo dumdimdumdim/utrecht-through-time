@@ -97,7 +97,7 @@ mapB.on("move", () => {
 });
 
 /* --------------------------------------------------------------- layers */
-function tileLayer(key) {
+function tileLayer(key, preview = false) {
   const s = SOURCES[key];
   const o = {
     minZoom: 12, maxZoom: 19, minNativeZoom: s.minNative || 0,
@@ -105,6 +105,9 @@ function tileLayer(key) {
     attribution: s.credit,
   };
   if (s.bounds) o.bounds = L.latLngBounds(s.bounds);
+  // Request higher-resolution Allmaps tiles for the small preview without
+  // changing its geographic extent or the main map's tile requests.
+  if (preview && key === "1740") { o.tileSize = 128; o.zoomOffset = 1; }
   return L.tileLayer(s.url, o);
 }
 
@@ -462,7 +465,7 @@ function showPreview(key, chip) {
   pv.classList.add("on");
   initMini();
   if (miniLayer) mini.removeLayer(miniLayer);
-  miniLayer = tileLayer(key).addTo(mini);
+  miniLayer = tileLayer(key, true).addTo(mini);
   $("pvYear").textContent = SOURCES[key].label;
   $("pvSrc").textContent = SOURCES[key].credit;
   positionPreview(chip);
@@ -470,7 +473,9 @@ function showPreview(key, chip) {
   requestAnimationFrame(() => {
     mini.invalidateSize();
     const b = SOURCES[key].bounds ? L.latLngBounds(SOURCES[key].bounds) : L.latLngBounds(BOUNDS);
-    mini.fitBounds(b, { padding: [2, 2], animate: false });
+    const wholeSheet = key === "1569" || key === "1740";
+    mini.options.zoomSnap = wholeSheet ? .01 : .25;
+    mini.fitBounds(b, { padding: wholeSheet ? [6, 6] : [2, 2], animate: false });
   });
 }
 
