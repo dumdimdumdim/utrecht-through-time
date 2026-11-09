@@ -472,13 +472,8 @@ function showPreview(key, chip) {
   chip.classList.add("previewing");
   requestAnimationFrame(() => {
     mini.invalidateSize();
-    const b = SOURCES[key].bounds ? L.latLngBounds(SOURCES[key].bounds) : L.latLngBounds(BOUNDS);
     mini.options.zoomSnap = .25;
-    if (key === "1569" || key === "1740") {
-      mini.setView([52.0905, 5.1205], 15, { animate: false });
-    } else {
-      mini.fitBounds(b, { padding: [2, 2], animate: false });
-    }
+    mini.setView([52.0905, 5.1205], 15, { animate: false });
   });
 }
 
