@@ -473,9 +473,12 @@ function showPreview(key, chip) {
   requestAnimationFrame(() => {
     mini.invalidateSize();
     const b = SOURCES[key].bounds ? L.latLngBounds(SOURCES[key].bounds) : L.latLngBounds(BOUNDS);
-    const wholeSheet = key === "1569" || key === "1740";
-    mini.options.zoomSnap = wholeSheet ? .01 : .25;
-    mini.fitBounds(b, { padding: wholeSheet ? [6, 6] : [2, 2], animate: false });
+    mini.options.zoomSnap = .25;
+    if (key === "1569" || key === "1740") {
+      mini.setView([52.0905, 5.1205], 15, { animate: false });
+    } else {
+      mini.fitBounds(b, { padding: [2, 2], animate: false });
+    }
   });
 }
 
