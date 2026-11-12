@@ -57,6 +57,7 @@ const HISTORIC_PLACES = [
     summary: 'Around 1970, part of the city moat was filled in to make way for the Catharijnebaan road beside Hoog Catharijne. Decades later, the road was removed and the water restored. Since 2020 the canal has encircled the old city again.',
     image: 'catharijne', size: [480, 640], imageAlt: 'Four-lane Catharijnebaan road beside Hoog Catharijne', credit: 'Luctor · 2008 · public domain', locationNote: 'The marker shows where this photograph was taken, at Hoog Catharijne.',
     imagePage: 'https://commons.wikimedia.org/wiki/File:Catharijnesingel.jpg',
+    relatedImages: [{ title: 'The canal returns', date: '2011', kind: 'Photograph', maker: 'Hay Kranen', institution: 'Wikimedia Commons', rights: 'CC BY 4.0 · resized', licenseUrl: 'https://creativecommons.org/licenses/by/4.0/', size: [500, 333], src: 'assets/poi/catharijne-works.jpg', page: 'https://commons.wikimedia.org/wiki/File:Catharijnebaan_-_Catharijnesingel_werkzaamheden_2011_(Q2674223).jpg', alt: 'Construction work to restore the Catharijnesingel canal in 2011', description: 'The canal under reconstruction at the former Catharijnebaan, January 2011.' }],
     sources: [['The story of the city canal', 'https://erfgoed.utrecht.nl/verhalen/singelroute/een-singel-rondom'], ['A second photograph of the road', 'https://commons.wikimedia.org/wiki/File:Catharijnesingel20082.jpg']]
   },
   {
@@ -132,7 +133,7 @@ const HISTORIC_GALLERY = [
   { title: 'Mariagracht and Mariawaterpoortje', date: 'c. 1755–1765', kind: 'Drawing', maker: 'Dirk Verrijk', institution: 'Het Utrechts Archief · HUA-35502', rights: 'Public domain', coords: [52.08834, 5.11337], location: 'Former Mariagracht (approximate)', locationNote: 'Verrijk drew the canal looking east toward the Mariawaterpoortje and the Dom Tower. The marker sits on the former canal alignment near an archaeological borehole that identified canal fill. The exact viewpoint remains unknown.', locationSource: 'https://archisarchief.cultureelerfgoed.nl/Archis2/Archeorapporten/37/AR33107/V-13.0101%20Utrecht.pdf', approximate: true, size: [480, 319], src: 'assets/heritage/utrecht-11', page: 'https://commons.wikimedia.org/wiki/File:HUA-35502-Gezicht_op_de_Mariagracht_te_Utrecht_uit_het_westen_met_aan_weerszijden_een_dubbele_bomenrij_en_aan_het_eind_de_stadsmuur_met_het_Mariawaterpoortje.jpg', alt: 'Dirk Verrijk drawing of Mariagracht ending at Mariawaterpoortje' },
   { title: 'View on the Oude Gracht', date: '1830', kind: 'Lithograph', maker: 'Reinier Craeyvanger', institution: 'Rijksmuseum · RP-P-OB-27.843', rights: 'CC0', coords: [52.08825, 5.12146], location: 'Oudegracht south of Hamburgerbrug (approximate)', locationNote: 'Approximate viewpoint on the southern stretch of Oudegracht, looking north toward the Dom Tower. The bridge in the print remains unconfirmed.', locationSource: 'https://id.rijksmuseum.nl/200178079', approximate: true, size: [480, 503], src: 'assets/heritage/utrecht-12', page: 'https://commons.wikimedia.org/wiki/File:Gezicht_op_de_Oude_Gracht_in_Utrecht_Zes_gezichten_op_Utrecht_(serietitel),_RP-P-OB-27.843.jpg', alt: 'Lithograph of Oudegracht, bridge and Dom Tower' },
   { title: 'Utrecht from Paardenveld', date: '1756', kind: 'Etching', maker: 'Jan Caspar Philips after Jan de Beijer', institution: 'Rijksmuseum · RP-P-1911-3165', rights: 'Public domain', coords: [52.09486, 5.11100], location: 'Paardenveld', locationNote: 'Documented viewing area: Paardenveld. The marker indicates the area rather than the artist’s exact position.', locationSource: 'https://erfgoed.utrecht.nl/verhalen/paardenveld', size: [480, 252], src: 'assets/heritage/utrecht-14', page: 'https://www.rijksmuseum.nl/en/collection/object/Gezicht-op-Utrecht--3a10cb1aa8ece6f6e21db47db7dcf4d9', alt: 'Etching showing Utrecht from Paardenveld with a windmill' },
-  { title: 'Suburb outside the Waardpoort', date: '1786–1792', kind: 'Etching', maker: 'Carel Frederik Bendorp after Jan Bulthuis', institution: 'Rijksmuseum · RP-P-2019-2404', rights: 'Public domain', coords: [52.0985, 5.1138], location: 'Stenenbrug over the Vecht (approximate)', locationNote: 'The print shows the suburb outside the former Weerdpoort. The marker uses today’s Stenenbrug over the Vecht, beyond Weerdsluis, as an approximate reference point.', locationSource: 'https://www.utrecht.nl/fileadmin/uploads/documenten/wonen-en-leven/verkeer/boot/vaarkaart.pdf', approximate: true, size: [480, 252], src: 'assets/heritage/utrecht-15', page: 'https://www.rijksmuseum.nl/en/collection/object/Gezicht-op-Utrecht--afebfdb11f0feb7bd55efc77a9885a45', alt: 'Etching of the suburb outside Utrecht Waardpoort' },
+  { title: 'Suburb outside the Waardpoort', date: '1786–1792', kind: 'Etching', maker: 'Carel Frederik Bendorp after Jan Bulthuis', institution: 'Rijksmuseum · RP-P-2019-2404', rights: 'Public domain', coords: [52.0985, 5.1138], location: 'Stenenbrug over the Vecht (approximate)', locationNote: 'The print shows the suburb outside the former Weerdpoort. The marker uses today’s Stenenbrug over the Vecht, beyond Weerdsluis, as an approximate reference point.', locationSource: 'https://www.utrecht.nl/fileadmin/uploads/documenten/wonen-en-leven/verkeer/boot/vaarkaart.pdf', approximate: true, size: [480, 389], src: 'assets/heritage/utrecht-15', page: 'https://www.rijksmuseum.nl/en/collection/object/Gezicht-op-Utrecht--afebfdb11f0feb7bd55efc77a9885a45', alt: 'Etching of the suburb outside Utrecht Waardpoort' },
   { title: 'Panoramic view of Utrecht', date: '1650–1665', kind: 'Oil painting', maker: 'Joost Cornelisz. Droochsloot', institution: 'Centraal Museum · object 2298', rights: 'Public domain', coords: [52.0908, 5.1047], location: 'Leidse Rijn near Lombokplein (approximate)', locationNote: 'The marker indicates an approximate viewpoint by the Leidse Rijn, northwest of Utrecht Centraal. The museum describes the panorama as a view from the west. The exact viewpoint remains unknown.', approximate: true, size: [480, 136], src: 'assets/heritage/utrecht-16', page: 'https://www.centraalmuseum.nl/en/collection/2298-gezicht-op-de-stad-utrecht-joost-cornelisz-droochsloot', alt: 'Panoramic painting of Utrecht from the west before the 1674 storm' },
   { title: 'Imagined view of the city of Utrecht', date: '1660–1670', kind: 'Oil painting', maker: 'Willem van Drielenburg', institution: 'Centraal Museum · object 17302', rights: 'Public domain', locationNote: 'The museum describes this as an imagined cityscape.', size: [480, 341], src: 'assets/heritage/utrecht-17', page: 'https://www.centraalmuseum.nl/en/collection/17302-gefantaseerd-gezicht-op-de-stad-utrecht-willem-van-drielenburg', alt: 'Imagined 17th-century cityscape of Utrecht by Willem van Drielenburg' },
   { title: 'Utrecht city square with the Dom Tower', date: 'c. 1800–1815', kind: 'Watercolour and ink drawing', maker: 'Jan Hendrik Verheijen', institution: 'Centraal Museum · object 23782', rights: 'Public domain', locationNote: 'This study for an imagined cityscape includes the recognizable Dom Tower.', size: [480, 356], src: 'assets/heritage/utrecht-18', page: 'https://www.centraalmuseum.nl/en/collection/23782-stadsplein-met-de-domtoren-van-utrecht-jan-hendrik-verheijen', alt: 'Watercolour study of a Utrecht square and Dom Tower' },
@@ -161,6 +162,7 @@ const HISTORIC_GALLERY = [
   let imageTrigger;
   let hoveredEntry;
   let focusedEntry;
+  let selectedEntry;
 
   function element(tag, text, className) {
     const node = document.createElement(tag);
@@ -184,13 +186,14 @@ const HISTORIC_GALLERY = [
   }
 
   function listItem(item, onClick) {
-    const label = item.isImage ? [item.title, item.date, item.location].filter(Boolean).join(' · ') : item.title;
     const button = element('button', '', 'poi-list-item');
-    const arrow = element('span', '→');
-    arrow.setAttribute('aria-hidden', 'true');
     button.type = 'button';
     button.dataset.entry = item.key;
-    button.append(element('span', label), arrow);
+    const text = element('span', '', 'poi-list-text');
+    text.append(element('span', item.title, 'poi-list-name'));
+    const detail = item.isImage ? [item.date, item.location].filter(Boolean).join(' · ') : item.period;
+    if (detail) text.append(element('span', detail, 'poi-list-meta'));
+    button.append(text);
     button.addEventListener('click', () => onClick(button));
     button.addEventListener('pointerenter', () => { hoveredEntry = item.key; updateMarkerHighlights(); });
     button.addEventListener('pointerleave', () => { hoveredEntry = null; updateMarkerHighlights(); });
@@ -209,6 +212,7 @@ const HISTORIC_GALLERY = [
     content.replaceChildren(
       heading('Historical places'),
       element('p', 'Explore how Utrecht has changed over time.', 'poi-list-intro'),
+      element('h3', 'Stories', 'poi-sources-title'),
       makeList(stories),
       element('h3', 'Historical images', 'poi-sources-title'),
       makeList(gallery)
@@ -221,7 +225,8 @@ const HISTORIC_GALLERY = [
       nodes: [...content.childNodes],
       scrollTop: panel.scrollTop,
       trigger,
-      markerEntries: trigger.entryKeys
+      markerEntries: trigger.entryKeys,
+      selectedEntry
     });
     hoveredEntry = null;
     focusedEntry = null;
@@ -237,6 +242,8 @@ const HISTORIC_GALLERY = [
     const previous = navigation.pop();
     if (!previous) return;
     content.replaceChildren(...previous.nodes);
+    selectedEntry = previous.selectedEntry;
+    updateMarkerHighlights();
     back.hidden = navigation.length === 0;
     panel.scrollTop = previous.scrollTop;
     if (!restoreFocus) return;
@@ -256,11 +263,14 @@ const HISTORIC_GALLERY = [
 
   function openEntry(item, trigger, fromList = false) {
     navigate(trigger, () => item.isImage ? renderGalleryItem(item) : renderStory(item));
+    selectedEntry = item.key;
+    updateMarkerHighlights();
     if (fromList && item.coords) centerOn(item.coords);
   }
 
   function imagePath(src, variant) {
-    return src.replace(/\/([^/]+)$/, '/' + variant + '/$1.webp');
+    const filename = src.endsWith('.jpg') ? '$1' : '$1.webp';
+    return src.replace(/\/([^/]+)$/, '/' + variant + '/' + filename) + (src.endsWith('/utrecht-15') ? '?v=2' : '');
   }
 
   function renderFigure(src, size, alt, notes, original) {
@@ -305,6 +315,7 @@ const HISTORIC_GALLERY = [
       renderFigure(item.src, item.size, item.alt, [item.description, item.maker, item.institution, item.rights], item.page),
       link('Open source record ↗', item.page, 'poi-image-link')
     );
+    if (item.licenseUrl) content.append(document.createTextNode(' · '), link('License ↗', item.licenseUrl, 'poi-image-link'));
   }
 
   function renderGalleryItem(item) {
@@ -312,12 +323,16 @@ const HISTORIC_GALLERY = [
     appendGalleryImage(item);
     content.append(element('p', item.locationNote, 'poi-story poi-location'));
     if (item.locationSource) content.append(link('Location source ↗', item.locationSource, 'poi-image-link'));
-    if (item.approximate) {
-      const show = element('button', 'Show approximate point on map', 'poi-map-action');
-      show.type = 'button';
-      show.addEventListener('click', () => centerOn(item.coords));
-      content.append(show);
-    }
+    const next = element('button', 'Next →', 'poi-next');
+    next.type = 'button';
+    next.addEventListener('click', () => {
+      const following = gallery[(gallery.findIndex(entry => entry.key === item.key) + 1) % gallery.length];
+      selectedEntry = following.key; updateMarkerHighlights();
+      content.replaceChildren(); renderGalleryItem(following); panel.scrollTop = 0;
+      content.querySelector('h2').focus({ preventScroll: true });
+      if (following.coords) centerOn(following.coords);
+    });
+    content.append(next);
   }
 
   function renderStory(place) {
@@ -343,6 +358,18 @@ const HISTORIC_GALLERY = [
     const sources = element('div', '', 'poi-sources');
     for (const [text, url] of place.sources) sources.append(link(text + ' ↗', url));
     content.append(element('h3', 'Sources', 'poi-sources-title'), sources);
+    const next = element('button', 'Next →', 'poi-next');
+    next.type = 'button';
+    next.addEventListener('click', () => {
+      const following = stories[(stories.findIndex(item => item.key === place.key) + 1) % stories.length];
+      selectedEntry = following.key; updateMarkerHighlights();
+      content.replaceChildren();
+      renderStory(following);
+      panel.scrollTop = 0;
+      content.querySelector('h2').focus({ preventScroll: true });
+      if (following.coords) centerOn(following.coords);
+    });
+    content.append(next);
   }
 
   function createMarker(entries) {
@@ -361,6 +388,18 @@ const HISTORIC_GALLERY = [
     const ringTwo = element('span', '', 'poi-ring poi-ring-two');
     ringOne.setAttribute('aria-hidden', 'true'); ringTwo.setAttribute('aria-hidden', 'true');
     button.append(dot, ringOne, ringTwo);
+    if (!isGroup) {
+      const item = entries[0];
+      const src = item.isImage ? item.src : item.image ? 'assets/poi/' + item.image : item.relatedImages?.[0]?.src;
+      if (src) {
+        button.removeAttribute('title');
+        const preview = element('span', '', 'poi-tooltip');
+        const image = element('img');
+        image.src = imagePath(src, 'preview'); image.alt = ''; image.loading = 'lazy';
+        preview.append(image, element('span', item.title));
+        button.append(preview);
+      }
+    }
     button.addEventListener('click', () => {
       while (navigation.length) goBack(false);
       if (isGroup) {
@@ -375,7 +414,7 @@ const HISTORIC_GALLERY = [
 
   function updateMarkerHighlights() {
     for (const marker of markers.values()) {
-      marker.classList.toggle('is-highlighted', marker.entryKeys.includes(hoveredEntry) || marker.entryKeys.includes(focusedEntry));
+      marker.classList.toggle('is-highlighted', marker.entryKeys.includes(hoveredEntry) || marker.entryKeys.includes(focusedEntry) || marker.entryKeys.includes(selectedEntry));
     }
   }
 
@@ -421,6 +460,8 @@ const HISTORIC_GALLERY = [
     panel.inert = !enabled;
     document.body.classList.toggle('poi-open', enabled);
     navigation.length = 0;
+    selectedEntry = null;
+    updateMarkerHighlights();
     back.hidden = true;
     if (enabled) {
       leaveLens();

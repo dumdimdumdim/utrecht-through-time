@@ -7,7 +7,7 @@
 <meta name="description" content="A white-glass spyglass that overlays the 1569/70 plan of Utrecht and later topographical surveys on the present-day city.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="vendor/leaflet.css">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body class="lens-on">
 
@@ -24,13 +24,11 @@
 <div class="year-controls">
   <div class="years" id="years" role="group" aria-label="Historic map"></div>
   <button id="swap" class="glass-btn" aria-label="Swap maps" title="Swap maps (X)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width=".833" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.519 4.055 L5.719 2.855 C5.9 2.787 6.1 2.787 6.281 2.855 L9.719 4.145 C9.9 4.213 10.1 4.213 10.281 4.145 L12.919 3.155 C13.442 2.959 14 3.346 14 3.904 L14 8.196 C14 8.529 13.793 8.828 13.481 8.945 L10.281 10.145 C10.1 10.213 9.9 10.213 9.719 10.145 L6.281 8.855 C6.1 8.787 5.9 8.787 5.719 8.855 L3.081 9.845 C2.558 10.041 2 9.654 2 9.096 L2 4.804 C2 4.471 2.207 4.172 2.519 4.055 Z"/><path d="M6 2.75v6M10 4.25v6M2 13.25l4-1.5 4 1.5 4-1.5"/></svg>
   </button>
 </div>
 <button id="poiToggle" class="glass-btn poi-toggle" aria-label="Show historical places" title="Historical places" aria-expanded="false" aria-controls="poiPanel">
-  <svg class="poi-scroll-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h12a2 2 0 0 1 2 2v2h-4V6a2 2 0 0 0-4 0v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2h10"/><path d="M7 4a2 2 0 0 0-2 2v10"/></svg>
+  <svg class="poi-scroll-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width=".833" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.25 13.25 L2.25 3 C2.25 2.724 2.474 2.5 2.75 2.5 L4 2.5 C4.276 2.5 4.5 2.724 4.5 3 L4.5 4 C4.5 4.276 4.724 4.5 5 4.5 L6.25 4.5 C6.526 4.5 6.75 4.276 6.75 4 L6.75 3 C6.75 2.724 6.974 2.5 7.25 2.5 L8.75 2.5 C9.026 2.5 9.25 2.724 9.25 3 L9.25 4 C9.25 4.276 9.474 4.5 9.75 4.5 L11 4.5 C11.276 4.5 11.5 4.276 11.5 4 L11.5 3 C11.5 2.724 11.724 2.5 12 2.5 L13.25 2.5 C13.526 2.5 13.75 2.724 13.75 3 L13.75 13.25 C13.75 13.526 13.526 13.75 13.25 13.75 L2.75 13.75 C2.474 13.75 2.25 13.526 2.25 13.25 Z"/><path d="M6.25 13.75 V11 A1.75 1.75 0 0 1 9.75 11 V13.75"/></svg>
   <svg class="poi-x-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
 </button>
 
@@ -115,6 +113,6 @@
 
 <script src="vendor/leaflet.js"></script>
 <script src="app.js"></script>
-<script src="poi.js"></script>
+<script src="poi.js?v=4"></script>
 </body>
 </html>

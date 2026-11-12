@@ -111,6 +111,8 @@ Built by **[Kanstantsin Kisleika](https://kisleyko.com)**.
 
 ## License
 
+The map-layers and castle icons are from [IconMCP](https://iconmcp.com/licence), distributed under the MIT License.
+
 The original project code is released under the [MIT License](LICENSE),
 © Kanstantsin Kisleika. The bundled Leaflet library is provided under its own
 [BSD 2-Clause License](vendor/LICENSE-Leaflet.txt). The map data keeps the

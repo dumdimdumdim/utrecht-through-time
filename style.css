@@ -365,3 +365,38 @@ body:not(.lens-on) #lensCredit, body.poi-open #lensCredit { display: none; }
 .poi-marker:hover .poi-ring-two, .poi-marker.is-highlighted .poi-ring-two { animation-delay: 1.2s; }
 @keyframes poi-pulse { 0% { transform: scale(.25); opacity: .7; } 100% { transform: scale(1.3); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .poi-marker:hover .poi-dot, .poi-marker.is-highlighted .poi-dot { opacity: 1; transform: none; } .poi-marker:hover .poi-ring, .poi-marker.is-highlighted .poi-ring { animation: none; } }
+
+/* Align the panel label with the centre of its close control. */
+.poi-panel-header { padding-top: 29px; }
+@media (max-width: 560px) { .poi-panel-header { padding-top: 27px; } }
+
+/* Compact navigation and desktop map previews. */
+.poi-list-item { min-height: 0; padding: 5px 2px; }
+.poi-list-item span { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #9a8b77; }
+.poi-next { display: block; width: 100%; margin-top: 26px; padding: 11px 12px; border: 1px solid var(--line-strong); border-radius: 9px; background: transparent; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.poi-next:hover { background: #252b3212; }
+.poi-tooltip { display: none; }
+@media (hover: hover) and (pointer: fine) {
+ .poi-marker .poi-tooltip { position: absolute; bottom: 31px; left: 50%; transform: translateX(-50%); width: 164px; padding: 6px; border-radius: 10px; background: #faf8f2; color: #252b32; box-shadow: 0 5px 18px #0003; pointer-events: none; text-align: left; font: 11px/1.35 var(--font-ui); z-index: 2; }
+ .poi-marker:hover { z-index: 5; }
+ .poi-marker:hover .poi-tooltip { display: block; }
+ .poi-tooltip img { display: block; width: 100%; height: 100px; object-fit: contain; background: #e9e5dc; border-radius: 6px; margin-bottom: 5px; }
+}
+
+.poi-list-item span { text-decoration: none; }
+body.poi-open .poi-marker { cursor: pointer; }
+@media (hover: hover) and (pointer: fine) {
+ .poi-marker .poi-tooltip { display: block; opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility 0s linear .25s; }
+ .poi-marker:hover .poi-tooltip { opacity: 1; visibility: visible; transition-delay: 0s; }
+}
+@media (prefers-reduced-motion: reduce) { .poi-marker .poi-tooltip { transition: none; } }
+
+/* Navigation: titles lead, dates and locations support them. */
+.poi-list-item { display: block; padding: 9px 2px; }
+.poi-list-text { display: block; }
+.poi-list-name { display: block; font-weight: 600; line-height: 1.35; }
+.poi-list-meta { display: block; margin-top: 3px; color: var(--ink-dim); font-size: 11px; line-height: 1.35; font-weight: 400; }
+.poi-list-item:hover .poi-list-name { color: #79500f; }
+.poi-next { display: inline-block; width: auto; min-height: 44px; margin-top: 18px; padding: 0; border: 0; border-radius: 0; background: transparent; color: #79500f; font: 11px/1.4 var(--font-ui); text-decoration: underline; text-underline-offset: 3px; }
+.poi-next:hover { background: transparent; color: var(--ink); }
+.poi-next:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
