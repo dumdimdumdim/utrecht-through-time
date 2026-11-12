@@ -17,8 +17,9 @@
   <div id="mapFlash" class="map"></div>
 </main>
 
-<div class="attribution" id="attribution"></div>
+<div class="attribution" id="attribution"><span id="baseCredit"></span><span id="lensCredit"></span></div>
 <div class="notice glass" id="notice" role="status" aria-live="polite" hidden></div>
+<div id="poiLayer" class="poi-layer" aria-label="Historical points of interest" hidden></div>
 
 <div class="year-controls">
   <div class="years" id="years" role="group" aria-label="Historic map"></div>
@@ -28,6 +29,10 @@
     </svg>
   </button>
 </div>
+<button id="poiToggle" class="glass-btn poi-toggle" aria-label="Show historical places" title="Historical places" aria-expanded="false" aria-controls="poiPanel">
+  <svg class="poi-scroll-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h12a2 2 0 0 1 2 2v2h-4V6a2 2 0 0 0-4 0v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2h10"/><path d="M7 4a2 2 0 0 0-2 2v10"/></svg>
+  <svg class="poi-x-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</button>
 
 <div class="controls" role="group" aria-label="Map controls">
   <button id="btnInfo" class="glass-btn" aria-label="About and credits" title="About and credits">
@@ -51,8 +56,21 @@
 
 <div id="yearPreview" aria-hidden="true">
   <div class="mini" id="yearMap"></div>
-  <div class="cap"><b id="pvYear"></b><span id="pvSrc"></span></div>
+  <div class="cap"><b id="pvYear"></b><span id="pvSrc"></span><span id="pvNotice" hidden></span></div>
 </div>
+
+<aside id="poiPanel" class="poi-panel" aria-label="Historical places" aria-hidden="true" inert>
+  <div class="poi-panel-header"><span>UTRECHT THROUGH TIME</span><button id="poiBack" class="poi-back" aria-label="Back" hidden>←</button></div>
+  <div id="poiContent" class="poi-content"></div>
+</aside>
+<dialog id="poiLightbox" class="poi-lightbox" aria-label="Historical image">
+  <div class="poi-lightbox-content">
+    <button id="poiLightboxClose" class="poi-lightbox-close" aria-label="Close image" autofocus>×</button>
+    <img id="poiLightboxImage" alt="" hidden>
+    <p id="poiLightboxStatus" role="status"></p>
+    <a id="poiLightboxSource" target="_blank" rel="noopener noreferrer">Open source record ↗</a>
+  </div>
+</dialog>
 
 <div id="info" class="hidden" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
   <div class="info-card glass">
@@ -97,5 +115,6 @@
 
 <script src="vendor/leaflet.js"></script>
 <script src="app.js"></script>
+<script src="poi.js"></script>
 </body>
 </html>

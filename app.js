@@ -114,43 +114,63 @@ function tileLayer(key, preview = false) {
 let layerA = null, layerB = null;
 let baseKey = null, hoverKey = null;
 
-/* --------------------------------------------------------- layer health
-   External tile services (Allmaps, OpenStreetMap, Esri) can go down. If a
-   layer finishes loading with errors and not a single tile arrived, say so
-   instead of leaving an empty lens. Local layers are not watched: tiles that
-   are simply missing for part of the map are expected there. */
-const failedLayers = new Set();
+/* --------------------------------------------------------- layer health */
+const tileHealth = new WeakMap();
 const notice = $("notice");
 
-function isExternal(key) { return /^https?:/.test(SOURCES[key].url); }
-
-function updateNotice() {
-  const keys = [...failedLayers];
-  notice.hidden = keys.length === 0;
-  if (!keys.length) return;
-  notice.textContent = keys.map(k => SOURCES[k].short).join(", ") +
-    (keys.length > 1 ? " layers are" : " layer is") + " temporarily unavailable.";
+function getTileHealth(layer, container) {
+  const tiles = tileHealth.get(layer);
+  if (!tiles) return;
+  const viewport = container.getBoundingClientRect();
+  let loaded = 0, failed = 0;
+  for (const [tile, ok] of tiles) {
+    if (!tile.isConnected) continue;
+    const rect = tile.getBoundingClientRect();
+    if (rect.right <= viewport.left || rect.left >= viewport.right ||
+        rect.bottom <= viewport.top || rect.top >= viewport.bottom) continue;
+    if (ok) loaded++;
+    else failed++;
+  }
+  if (failed) return loaded || layer.isLoading() ? "partially unavailable" : "temporarily unavailable";
 }
 
-function watchLayer(layer, key) {
-  if (!isExternal(key)) return;
-  let ok = 0, bad = 0;
-  layer.on("loading", () => { ok = 0; bad = 0; });
-  layer.on("tileload", () => { ok++; });
-  layer.on("tileerror", () => { bad++; });
-  layer.on("load", () => {
-    if (layer !== layerA && layer !== layerB) return;
-    if (bad > 0 && ok === 0) failedLayers.add(key);
-    else failedLayers.delete(key);
-    updateNotice();
-  });
+function updateNotice() {
+  const layers = [[layerB, baseKey, mapB]];
+  if (document.body.classList.contains("lens-on") && !document.body.classList.contains("poi-open")) {
+    layers.push([layerA, hoverKey, mapA]);
+  }
+  const messages = [];
+  for (const [layer, key, map] of layers) {
+    const health = getTileHealth(layer, map.getContainer());
+    if (health) messages.push(SOURCES[key].short + " layer is " + health + ".");
+  }
+  const message = messages.join(" ");
+  if (notice.textContent !== message) notice.textContent = message;
+  notice.hidden = messages.length === 0;
+}
+
+function watchLayer(layer, update) {
+  const tiles = new Map();
+  tileHealth.set(layer, tiles);
+  let frame = 0;
+  const scheduleUpdate = () => {
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      update();
+    });
+  };
+  layer.on("tileload", ({ tile }) => tiles.set(tile, true));
+  layer.on("tileerror", ({ tile }) => { tiles.set(tile, false); scheduleUpdate(); });
+  layer.on("tileunload", ({ tile }) => { if (tiles.delete(tile)) scheduleUpdate(); });
+  layer.on("load", scheduleUpdate);
 }
 
 // Lay the new layer on top and remove the old one only after it loads —
 // no empty frame or flicker when switching year.
 function replaceLayer(map, current, key) {
   const fresh = tileLayer(key);
-  watchLayer(fresh, key);
+  watchLayer(fresh, updateNotice);
   let done = false;
   const cleanup = () => {
     if (done) return;
@@ -169,12 +189,10 @@ function refreshLayers() {
   mapB.getContainer().classList.toggle("historic-map", OLD_KEYS.includes(base));
   mapA.getContainer().classList.toggle("historic-map", OLD_KEYS.includes(hover));
   if (base !== baseKey) {
-    failedLayers.delete(baseKey);
     layerB = replaceLayer(mapB, layerB, base);
     baseKey = base;
   }
   if (hover !== hoverKey) {
-    failedLayers.delete(hoverKey);
     layerA = replaceLayer(mapA, layerA, hover);
     hoverKey = hover;
   }
@@ -351,6 +369,7 @@ function enterLens(clientX, clientY) {
   setLens(x, y);
   if (OCTA) octSnap(lastX, lastY, lensRadius);
   document.body.classList.add("lens-on");
+  updateNotice();
 }
 
 function moveLens(clientX, clientY) {
@@ -366,7 +385,6 @@ function moveLens(clientX, clientY) {
   targetRadius = BASE_R * (1 + intensity);
   lastMoveTime = now;
   setLens(x, y);
-  document.body.classList.add("lens-on");
 }
 
 function leaveLens() {
@@ -375,6 +393,7 @@ function leaveLens() {
   lensRadius = BASE_R;
   applyRadius(lensRadius);
   document.body.classList.remove("lens-on");
+  updateNotice();
 }
 
 function tick(now) {
@@ -405,13 +424,13 @@ function tick(now) {
   requestAnimationFrame(tick);
 }
 
-stage.addEventListener("pointermove", e => moveLens(e.clientX, e.clientY));
-stage.addEventListener("pointerenter", e => moveLens(e.clientX, e.clientY));
-stage.addEventListener("pointerdown", e => moveLens(e.clientX, e.clientY));
+stage.addEventListener("pointermove", e => { if (!document.body.classList.contains("poi-open")) moveLens(e.clientX, e.clientY); });
+stage.addEventListener("pointerenter", e => { if (!document.body.classList.contains("poi-open")) moveLens(e.clientX, e.clientY); });
+stage.addEventListener("pointerdown", e => { if (!document.body.classList.contains("poi-open")) moveLens(e.clientX, e.clientY); });
 // On touch, pointerleave fires right after the finger lifts. Ignore it there:
 // the lens stays where the finger was, and only a mouse/pen leaving hides it.
 stage.addEventListener("pointerleave", e => {
-  if (e.pointerType === "touch") return;
+  if (e.pointerType === "touch" || e.relatedTarget?.closest?.(".poi-marker")) return;
   leaveLens();
 });
 const liftTouch = e => {
@@ -423,8 +442,13 @@ stage.addEventListener("pointerup", liftTouch);
 stage.addEventListener("pointercancel", liftTouch);
 
 /* --------------------------------------------------------------- chrome */
+function updateLayerCredits() {
+  $("baseCredit").textContent = SOURCES[baseKey].credit;
+  $("lensCredit").textContent = " · " + SOURCES[hoverKey].credit;
+}
+
 function updateChrome() {
-  $("attribution").textContent = SOURCES[state.invert ? state.old : state.modern].credit;
+  updateLayerCredits();
   document.querySelectorAll("#years button").forEach(b => {
     const on = b.dataset.old === state.old;
     b.classList.toggle("on", on);
@@ -465,7 +489,17 @@ function showPreview(key, chip) {
   pv.classList.add("on");
   initMini();
   if (miniLayer) mini.removeLayer(miniLayer);
-  miniLayer = tileLayer(key, true).addTo(mini);
+  $("pvNotice").hidden = true;
+  const previewLayer = tileLayer(key, true);
+  const updatePreviewNotice = () => {
+    if (previewLayer !== miniLayer || !pv.classList.contains("on")) return;
+    const health = getTileHealth(previewLayer, mini.getContainer());
+    $("pvNotice").hidden = !health;
+    $("pvNotice").textContent = health ? "Map preview " + health + "." : "";
+  };
+  miniLayer = previewLayer;
+  watchLayer(previewLayer, updatePreviewNotice);
+  previewLayer.addTo(mini);
   $("pvYear").textContent = SOURCES[key].label;
   $("pvSrc").textContent = SOURCES[key].credit;
   positionPreview(chip);
@@ -624,6 +658,7 @@ function init() {
 
   buildYears();
   initView(qs);
+  mapB.on("moveend", updateNotice);
   mapB.on("moveend", syncUrl);   // after initView, so the first fit doesn't touch the URL
   refreshLayers();
 
@@ -635,6 +670,7 @@ function init() {
   setLens(box.width * lx / 100, box.height * ly / 100);
   if (OCTA) { octSnap(lastX, lastY, lensRadius); octRender(); }
   document.body.classList.add("lens-on");
+  updateNotice();
   updateChrome();
   requestAnimationFrame(() => $("years").classList.add("ready"));
   requestAnimationFrame(tick);
@@ -660,6 +696,15 @@ function init() {
 
 /* keyboard */
 document.addEventListener("keydown", e => {
+  if ($("poiLightbox").open) return;
+  if (!$("info").classList.contains("hidden")) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      $("info").classList.add("hidden");
+      $("btnInfo").focus();
+    }
+    return;
+  }
   const tag = e.target.tagName;
   if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
   if (/^[1-7]$/.test(e.key)) {
@@ -667,8 +712,6 @@ document.addEventListener("keydown", e => {
     if (k) setOld(k);
   } else if (e.key.toLowerCase() === "x") {
     setInvert(!state.invert);
-  } else if (e.key === "Escape") {
-    $("info").classList.add("hidden");
   }
 });
 

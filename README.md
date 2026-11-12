@@ -20,6 +20,10 @@ can compare four centuries directly.
 - **Swap** — flips the two layers: the old plan stays on screen and today's city
   appears inside the lens.
 - **1:1 alignment** — the lens never magnifies, so the maps line up exactly.
+- **Historical places and images** — open the scroll button to browse the stories
+  and archive. Markers that overlap open a list of their entries. Image cards
+  distinguish depicted landmarks, documented viewpoints and approximate areas.
+  Each card loads a small WebP preview and fetches the larger version on request.
 
 ### Keyboard
 
@@ -27,8 +31,7 @@ can compare four centuries directly.
 |---|---|
 | `1`–`7` | switch historic map (1569 → 1985) |
 | `X` | swap base and lens |
-| `F` | fullscreen |
-| `Esc` | close the info panel |
+| `Esc` | close the image or info dialog, go back in a card, or close the places panel |
 
 ## Share a view
 
