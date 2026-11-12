@@ -7,7 +7,7 @@
 <meta name="description" content="A white-glass spyglass that overlays the 1569/70 plan of Utrecht and later topographical surveys on the present-day city.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="vendor/leaflet.css">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body class="lens-on">
 
@@ -24,7 +24,7 @@
 <div class="year-controls">
   <div class="years" id="years" role="group" aria-label="Historic map"></div>
   <button id="swap" class="glass-btn" aria-label="Swap maps" title="Swap maps (X)">
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width=".833" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.519 4.055 L5.719 2.855 C5.9 2.787 6.1 2.787 6.281 2.855 L9.719 4.145 C9.9 4.213 10.1 4.213 10.281 4.145 L12.919 3.155 C13.442 2.959 14 3.346 14 3.904 L14 8.196 C14 8.529 13.793 8.828 13.481 8.945 L10.281 10.145 C10.1 10.213 9.9 10.213 9.719 10.145 L6.281 8.855 C6.1 8.787 5.9 8.787 5.719 8.855 L3.081 9.845 C2.558 10.041 2 9.654 2 9.096 L2 4.804 C2 4.471 2.207 4.172 2.519 4.055 Z"/><path d="M6 2.75v6M10 4.25v6M2 13.25l4-1.5 4 1.5 4-1.5"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width=".833" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.573 4.838 L6.392 3.929 C6.617 3.816 6.883 3.816 7.108 3.929 L8.892 4.821 C9.117 4.934 9.383 4.934 9.608 4.821 L10.877 4.186 C11.329 3.961 11.874 4.204 12.007 4.691 L13.808 11.296 C13.917 11.695 13.704 12.111 13.317 12.256 L10.281 13.395 C10.1 13.463 9.9 13.463 9.719 13.395 L6.281 12.105 C6.1 12.037 5.9 12.037 5.719 12.105 L3.451 12.956 C2.842 13.184 2.23 12.63 2.396 12.002 L4.158 5.349 C4.216 5.127 4.368 4.941 4.573 4.838 Z"/><path d="M6.75 3.875 6 12M9.375 6.44 10 13.5"/></svg>
   </button>
 </div>
 <button id="poiToggle" class="glass-btn poi-toggle" aria-label="Show historical places" title="Historical places" aria-expanded="false" aria-controls="poiPanel">
@@ -58,7 +58,7 @@
 </div>
 
 <aside id="poiPanel" class="poi-panel" aria-label="Historical places" aria-hidden="true" inert>
-  <div class="poi-panel-header"><span>UTRECHT THROUGH TIME</span><button id="poiBack" class="poi-back" aria-label="Back" hidden>←</button></div>
+  <div class="poi-panel-header"><button id="poiBack" class="poi-back" aria-label="Back" hidden>←</button></div>
   <div id="poiContent" class="poi-content"></div>
 </aside>
 <dialog id="poiLightbox" class="poi-lightbox" aria-label="Historical image">
@@ -113,6 +113,6 @@
 
 <script src="vendor/leaflet.js"></script>
 <script src="app.js"></script>
-<script src="poi.js?v=4"></script>
+<script src="poi.js?v=5"></script>
 </body>
 </html>

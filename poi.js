@@ -211,7 +211,6 @@ const HISTORIC_GALLERY = [
   function renderList() {
     content.replaceChildren(
       heading('Historical places'),
-      element('p', 'Explore how Utrecht has changed over time.', 'poi-list-intro'),
       element('h3', 'Stories', 'poi-sources-title'),
       makeList(stories),
       element('h3', 'Historical images', 'poi-sources-title'),

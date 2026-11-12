@@ -400,3 +400,12 @@ body.poi-open .poi-marker { cursor: pointer; }
 .poi-next { display: inline-block; width: auto; min-height: 44px; margin-top: 18px; padding: 0; border: 0; border-radius: 0; background: transparent; color: #79500f; font: 11px/1.4 var(--font-ui); text-decoration: underline; text-underline-offset: 3px; }
 .poi-next:hover { background: transparent; color: var(--ink); }
 .poi-next:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+.poi-next { display: table; margin-top: 18px; }
+
+/* Panel navigation aligns with the close control. */
+.poi-panel-header { min-height: 58px; padding: 14px 70px 0 17px; gap: 0; }
+.poi-toggle.on { color: var(--ink-dim); opacity: .55; }
+.poi-toggle.on:hover, .poi-toggle.on:focus-visible { opacity: 1; }
+.poi-next { margin-left: auto; margin-right: 0; text-align: right; }
+@media (max-width: 760px) { .poi-toggle.on { top: 78px; } }
