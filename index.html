@@ -7,7 +7,7 @@
 <meta name="description" content="A white-glass spyglass that overlays the 1569/70 plan of Utrecht and later topographical surveys on the present-day city.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="vendor/leaflet.css">
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body class="lens-on">
 
@@ -63,23 +63,25 @@
 </aside>
 <dialog id="poiLightbox" class="poi-lightbox" aria-label="Historical image">
   <div class="poi-lightbox-content">
-    <button id="poiLightboxClose" class="poi-lightbox-close" aria-label="Close image" autofocus>×</button>
+    <button id="poiLightboxClose" class="poi-lightbox-button poi-lightbox-close" aria-label="Close image" autofocus>×</button>
     <img id="poiLightboxImage" alt="" hidden>
     <p id="poiLightboxStatus" role="status"></p>
+    <div id="poiLightboxNavigation" class="poi-lightbox-navigation" role="group" aria-label="Images at this place" hidden>
+      <button id="poiLightboxPrevious" class="poi-lightbox-button" aria-label="Previous image">←</button>
+      <span id="poiLightboxCounter" role="status"></span>
+      <button id="poiLightboxNext" class="poi-lightbox-button" aria-label="Next image">→</button>
+    </div>
     <a id="poiLightboxSource" target="_blank" rel="noopener noreferrer">Open source record ↗</a>
   </div>
 </dialog>
 
-<div id="info" class="hidden" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+<div id="info" class="hidden" role="dialog" aria-modal="true" aria-label="About and credits">
   <div class="info-card glass">
     <button id="infoClose" class="glass-btn close" aria-label="Close">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M6 6l12 12"/><path d="M18 6 6 18"/>
       </svg>
     </button>
-    <p class="eyebrow">A spyglass over four centuries</p>
-    <h2 id="infoTitle">Utrecht through time</h2>
-
     <p class="lede">Jacob van Deventer surveyed the cities of the Low Countries for
       Philip&nbsp;II of Spain. His 1569/70 plan of Utrecht is among the earliest
       detailed ground plans of the city. This lens places that plan — and the
@@ -113,6 +115,6 @@
 
 <script src="vendor/leaflet.js"></script>
 <script src="app.js"></script>
-<script src="poi.js?v=5"></script>
+<script src="poi.js?v=8"></script>
 </body>
 </html>

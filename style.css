@@ -191,9 +191,7 @@ body.lens-on #mapA { opacity: 1; }
 }
 @keyframes info-in { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
 .info-card .close { position: absolute; right: 14px; top: 14px; }
-.eyebrow { margin: 0 0 6px; font-size: 11px; font-weight: 650; letter-spacing: .14em;
-  text-transform: uppercase; color: var(--gold-ink); }
-.info-card h2 { margin: 0 0 12px; font-size: 24px; font-weight: 650; letter-spacing: -.01em; }
+.info-card .lede { padding-right: 36px; }
 .info-card h3 { margin: 20px 0 8px; font-size: 13px; font-weight: 650; letter-spacing: .06em;
   text-transform: uppercase; color: var(--ink-faint); }
 .info-card p { margin: 0 0 12px; color: var(--ink-dim); font-size: 14px; line-height: 1.6; }
@@ -321,11 +319,20 @@ body.lens-on #mapA { opacity: 1; }
 .poi-lightbox::backdrop { background: #101217ed; }
 .poi-lightbox-content { display: grid; justify-items: center; gap: 10px; max-width: 100%; }
 .poi-lightbox img { max-width: 100%; max-height: calc(100dvh - 115px); object-fit: contain; }
+.poi-lightbox-content:has(.poi-lightbox-navigation:not([hidden])) img { max-height: calc(100dvh - 169px); }
 .poi-lightbox a { color: #fff; }
-.poi-lightbox-close {
-  position: absolute; right: 16px; top: 10px; width: 44px; height: 44px;
-  border: 0; border-radius: 50%; background: #ffffff30; color: #fff; font-size: 30px; cursor: pointer;
+.poi-lightbox-button {
+  display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
+  border: 0; border-radius: 50%; background: #ffffff30; color: #fff; font: 22px/1 var(--font-ui); cursor: pointer;
 }
+.poi-lightbox-button:hover { background: #ffffff45; }
+.poi-lightbox-button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.poi-lightbox-close { position: absolute; right: 16px; top: 10px; font-size: 30px; }
+.poi-lightbox-navigation {
+  align-items: center; gap: 10px; font: 14px/1 var(--font-ui); font-variant-numeric: tabular-nums;
+}
+.poi-lightbox-navigation:not([hidden]) { display: flex; }
+.poi-lightbox-navigation span { min-width: 46px; text-align: center; white-space: nowrap; }
 
 #stage { transition: filter .3s ease; }
 body.poi-open #stage { filter: grayscale(1); }

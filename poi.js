@@ -84,6 +84,37 @@ const HISTORIC_PLACES = [
     sources: [['History of the Mariakerk', 'https://erfgoed.utrecht.nl/verhalen/mariakerk']]
   },
   {
+    id: 'utrecht-centraal', coords: [52.0895, 5.1108], period: '1843–1866 · STATIONSPLEIN', title: 'The first Utrecht Centraal',
+    summary: 'Utrecht’s first railway station opened in 1843, just outside the city walls, with trains to Amsterdam. Horse-drawn carriages pulled up in front of the station. By 1866 the platforms and tracks behind the building were busy with steam locomotives and freight.',
+    locationNote: 'The marker identifies the station area at today’s Utrecht Centraal.',
+    relatedImages: [
+      {
+        title: 'The first station building', date: 'c. 1845', kind: 'Painting',
+        maker: 'Johan Godfried van Ginkel', institution: 'Spoorwegmuseum · Digital reproduction via AORTA',
+        rights: 'Artwork in the public domain',
+        size: [480, 300], src: 'assets/poi/utrecht-centraal-first-station.jpg',
+        page: 'https://www.aorta.nu/blog/de-terugkeer-van-het-stationsplein/',
+        alt: 'Painting of Utrecht’s first station, with a steam locomotive behind the fence on the right'
+      },
+      {
+        title: 'Carriages outside the station', date: '1845–1855', kind: 'Lithograph',
+        maker: 'Anonymous', institution: 'Het Utrechts Archief · HUA 38182', rights: 'Public domain',
+        size: [480, 368], src: 'assets/poi/utrecht-centraal-station-square.jpg',
+        page: 'https://commons.wikimedia.org/wiki/File:HUA-38182-Gezicht_op_de_voor_en_zijgevel_van_het_station_van_de_Nederlandsche_Rhijnspoorweg_maatschappij_NRS_te_Utrecht.jpg',
+        alt: 'Lithograph showing carriages and pedestrians outside Utrecht’s first station, inside a decorative border'
+      },
+      {
+        title: 'Platforms and goods yard', date: '1866', kind: 'Historical view',
+        maker: 'Anonymous', institution: 'Het Utrechts Archief · Wikimedia Commons',
+        rights: 'Public Domain Mark 1.0',
+        size: [480, 323], src: 'assets/poi/utrecht-centraal-station-tracks.jpg',
+        page: 'https://commons.wikimedia.org/wiki/File:Perron_van_de_Nederlandsche_Rhijnspoorweg-Maatschappij_in_1866_te_Utrecht.jpg',
+        alt: 'View of steam trains, covered platforms, a goods warehouse and a white footbridge'
+      }
+    ],
+    sources: [['The history of Stationsplein', 'https://www.aorta.nu/blog/de-terugkeer-van-het-stationsplein/']]
+  },
+  {
     id: 'railway', coords: [52.0878, 5.1112], period: '1866 · STATION AREA', title: 'A canal made way for the railway',
     summary: 'The railway reshaped the western edge of Utrecht in the nineteenth century. The Herengracht was filled in during 1866 to make room for railway infrastructure; the neighbouring Bloemgracht was widened and later became known as the Kruisvaart.',
     locationNote: 'The marker indicates the railway corridor where the former Herengracht ran.',
@@ -152,6 +183,8 @@ const HISTORIC_GALLERY = [
   const lightboxClose = $('poiLightboxClose');
   const lightboxStatus = $('poiLightboxStatus');
   const lightboxSource = $('poiLightboxSource');
+  const lightboxNavigation = $('poiLightboxNavigation');
+  const lightboxCounter = $('poiLightboxCounter');
   const stories = HISTORIC_PLACES.map(place => ({ ...place, key: place.id }));
   const gallery = HISTORIC_GALLERY.map((item, index) => ({ ...item, key: 'image-' + (index + 1), isImage: true }));
   const mappedEntries = [...stories, ...gallery].filter(item => item.coords);
@@ -160,6 +193,8 @@ const HISTORIC_GALLERY = [
   let enabled = false;
   let positionFrame = 0;
   let imageTrigger;
+  let lightboxImages = [];
+  let lightboxIndex = 0;
   let hoveredEntry;
   let focusedEntry;
   let selectedEntry;
@@ -272,7 +307,25 @@ const HISTORIC_GALLERY = [
     return src.replace(/\/([^/]+)$/, '/' + variant + '/' + filename) + (src.endsWith('/utrecht-15') ? '?v=2' : '');
   }
 
-  function renderFigure(src, size, alt, notes, original) {
+  function showLightboxImage(index) {
+    lightboxIndex = index;
+    const { src, alt, page } = lightboxImages[index];
+    lightboxImage.hidden = true;
+    lightboxImage.alt = alt;
+    lightboxStatus.hidden = false;
+    lightboxStatus.textContent = 'Loading image…';
+    lightboxSource.href = page;
+    if (!lightboxNavigation.hidden) lightboxCounter.textContent = (index + 1) + ' / ' + lightboxImages.length;
+    lightboxImage.src = imagePath(src, 'detail');
+  }
+
+  function stepLightbox(offset) {
+    const length = lightboxImages.length;
+    showLightboxImage((lightboxIndex + offset + length) % length);
+  }
+
+  function renderFigure(item, notes, images = [item]) {
+    const { src, size, alt, page } = item;
     const figure = element('figure', '', 'poi-figure');
     const button = element('button', '', 'poi-image-button');
     button.type = 'button';
@@ -284,7 +337,7 @@ const HISTORIC_GALLERY = [
     preview.decoding = 'async';
     button.append(preview);
     const fallback = element('p', 'Image unavailable. ', 'poi-story');
-    fallback.append(link('Open the original', original));
+    fallback.append(link('Open the original', page));
     fallback.hidden = true;
     preview.addEventListener('error', () => {
       fallback.hidden = false;
@@ -295,13 +348,10 @@ const HISTORIC_GALLERY = [
     preview.src = imagePath(src, 'preview');
     button.addEventListener('click', () => {
       imageTrigger = button;
-      lightboxImage.hidden = true;
-      lightboxImage.alt = alt;
-      lightboxStatus.hidden = false;
-      lightboxStatus.textContent = 'Loading image…';
-      lightboxSource.href = original;
+      lightboxImages = images;
+      lightboxNavigation.hidden = images.length < 2;
+      showLightboxImage(images.indexOf(item));
       lightbox.showModal();
-      lightboxImage.src = imagePath(src, 'detail');
     });
     const caption = element('figcaption');
     for (const note of notes.filter(Boolean)) caption.append(element('span', note));
@@ -309,9 +359,9 @@ const HISTORIC_GALLERY = [
     return figure;
   }
 
-  function appendGalleryImage(item) {
+  function appendGalleryImage(item, images) {
     content.append(
-      renderFigure(item.src, item.size, item.alt, [item.description, item.maker, item.institution, item.rights], item.page),
+      renderFigure(item, [item.description, item.maker, item.institution, item.rights], images),
       link('Open source record ↗', item.page, 'poi-image-link')
     );
     if (item.licenseUrl) content.append(document.createTextNode(' · '), link('License ↗', item.licenseUrl, 'poi-image-link'));
@@ -340,19 +390,24 @@ const HISTORIC_GALLERY = [
       heading(place.title),
       element('p', place.summary, 'poi-story')
     );
-    if (place.image) {
+    const cover = place.image && {
+      src: 'assets/poi/' + place.image, size: place.size, alt: place.imageAlt, page: place.imagePage
+    };
+    const related = place.relatedImages || [];
+    const images = cover ? [cover, ...related] : related;
+    if (cover) {
       content.append(
-        renderFigure('assets/poi/' + place.image, place.size, place.imageAlt, [place.imageNote, place.credit], place.imagePage),
-        link('View original image ↗', place.imagePage, 'poi-image-link')
+        renderFigure(cover, [place.imageNote, place.credit], images),
+        link('View original image ↗', cover.page, 'poi-image-link')
       );
     }
     if (place.locationNote) content.append(element('p', place.locationNote, 'poi-story poi-location'));
-    for (const image of place.relatedImages || []) {
+    for (const image of related) {
       content.append(
         element('h3', image.title, 'poi-sources-title'),
         element('p', image.date + ' · ' + image.kind, 'poi-period')
       );
-      appendGalleryImage(image);
+      appendGalleryImage(image, images);
     }
     const sources = element('div', '', 'poi-sources');
     for (const [text, url] of place.sources) sources.append(link(text + ' ↗', url));
@@ -476,9 +531,19 @@ const HISTORIC_GALLERY = [
   toggle.addEventListener('click', () => setEnabled(!enabled));
   back.addEventListener('click', () => goBack());
   lightboxClose.addEventListener('click', () => lightbox.close());
+  $('poiLightboxPrevious').addEventListener('click', () => stepLightbox(-1));
+  $('poiLightboxNext').addEventListener('click', () => stepLightbox(1));
+  lightbox.addEventListener('keydown', event => {
+    if (lightboxNavigation.hidden || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) return;
+    event.preventDefault();
+    stepLightbox(event.key === 'ArrowLeft' ? -1 : 1);
+  });
   lightbox.addEventListener('click', event => { if (event.target === lightbox) lightbox.close(); });
   lightbox.addEventListener('close', () => {
+    if (lightbox.open) return;
     lightboxImage.removeAttribute('src');
+    lightboxImages = [];
+    lightboxCounter.textContent = '';
     if (imageTrigger?.isConnected) imageTrigger.focus({ preventScroll: true });
   });
   lightboxImage.addEventListener('load', () => {
